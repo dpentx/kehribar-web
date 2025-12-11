@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>I use NixOS BTW!</title>
+    <title>Kehribar - I use NixOS BTW!</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
@@ -407,12 +407,12 @@
     <div class="container">
         <header>
             <img id="avatar" class="avatar" src="" alt="Avatar">
-            <h1 id="username">dpentx</h1>
+            <h1 id="username">Kehribar</h1>
             <p class="bio" id="bio-text"></p>
         </header>
 
         <nav>
-            <button class="nav-btn active" datadpentx-page="home"><i class="fas fa-home"></i> <span data-i18n="nav-home">Anasayfa</span></button>
+            <button class="nav-btn active" data-page="home"><i class="fas fa-home"></i> <span data-i18n="nav-home">Anasayfa</span></button>
             <button class="nav-btn" data-page="blog"><i class="fas fa-folder"></i> <span data-i18n="nav-blog">Blog</span></button>
             <button class="nav-btn" data-page="projects"><i class="fas fa-code"></i> <span data-i18n="nav-projects">Projeler</span></button>
             <button class="nav-btn" data-page="contact"><i class="fas fa-envelope"></i> <span data-i18n="nav-contact">İletişim</span></button>
@@ -436,7 +436,7 @@
 
             <div style="text-align: center; margin-top: 2rem;">
                 <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">🌲 Visitor Counter 🌲</p>
-                <img src="https://count.getloli.com/@dpentx?name=everforest&theme=rule34&padding=7&offset=0&align=top&scale=1&pixelated=1&darkmode=1" alt="visitor count">
+                <img src="https://count.getloli.com/@kehribar?name=everforest&theme=rule34&padding=7&offset=0&align=top&scale=1&pixelated=1&darkmode=1" alt="visitor count">
             </div>
         </section>
 
@@ -595,7 +595,7 @@
 
         async function loadProfile() {
             try {
-                document.getElementById("username").textContent = "dpentx";
+                document.getElementById("username").textContent = "Kehribar";
                 document.getElementById("avatar").src = `https://github.com/${githubUsername}.png?size=200`;
 
                 let allRepos = [];
@@ -615,7 +615,7 @@
                 document.getElementById("stars-count").textContent = totalStars;
             } catch (error) {
                 console.error('Error loading profile:', error);
-                document.getElementById("username").textContent = "dpentx";
+                document.getElementById("username").textContent = "Kehribar";
                 document.getElementById("avatar").src = `https://github.com/${githubUsername}.png?size=200`;
                 document.getElementById("repo-count").textContent = '~';
                 document.getElementById("stars-count").textContent = '~';
@@ -847,6 +847,16 @@
         document.addEventListener('DOMContentLoaded', () => {
             applyTranslations(currentLang);
             loadProfile();
+            
+            const hash = window.location.hash.slice(1);
+            if (!hash || hash === 'home') {
+                loadBlogIndex().then(() => {
+                    countAllMarkdownFiles().then(count => {
+                        document.getElementById("blog-count").textContent = count;
+                    });
+                });
+            }
+            
             loadProjects();
             
             handleRouting();
@@ -858,6 +868,11 @@
             
             if (!hash || hash === 'home') {
                 showSection('home');
+                loadBlogIndex().then(() => {
+                    countAllMarkdownFiles().then(count => {
+                        document.getElementById("blog-count").textContent = count;
+                    });
+                });
             } else if (hash === 'projects') {
                 showSection('projects');
             } else if (hash === 'contact') {
@@ -921,4 +936,4 @@
         }
     </script>
 </body>
-</htmlhtml
+</html>html
