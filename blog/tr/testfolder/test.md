@@ -1,1 +1,1 @@
-test line. 'go ahead' 
+test yazısı. 'başka yere git.'  
