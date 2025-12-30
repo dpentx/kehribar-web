@@ -17,65 +17,38 @@ jobs:
         
       - name: Generate blog index
         run: |
-          cat > blog-index.json << 'EOF'
-          {
-            "tr": {},
-            "en": {}
-          }
-          EOF
-          
-          # Function to add files to JSON
-          generate_index() {
-            local lang=$1
-            local path="blog/$lang"
-            
-            if [ ! -d "$path" ]; then
-              return
-            fi
-            
-            echo "{"
-            first_folder=true
-            
-            for folder in "$path"/*; do
-              if [ -d "$folder" ]; then
-                folder_name=$(basename "$folder")
-                
-                if [ "$first_folder" = true ]; then
-                  first_folder=false
-                else
-                  echo ","
-                fi
-                
-                echo -n "  \"$folder_name\": ["
-                
-                first_file=true
-                for file in "$folder"/*.md; do
-                  if [ -f "$file" ]; then
-                    file_name=$(basename "$file")
-                    
-                    if [ "$first_file" = true ]; then
-                      first_file=false
-                    else
-                      echo -n ","
-                    fi
-                    
-                    echo -n "\"$file_name\""
-                  fi
-                done
-                
-                echo -n "]"
-              fi
-            done
-            
-            echo ""
-            echo "}"
-          }
-          
-          # Generate complete JSON
-          echo "{" > blog-index.json
-          echo "  \"tr\": $(generate_index tr)," >> blog-index.json
-          echo "  \"en\": $(generate_index en)" >> blog-index.json
-          echo "}" >> blog-index.json
+          # Python ile JSON üret (özel karakterleri düzgün işler)
+          python3 << 'PYTHON_SCRIPT'
+          import json
+          import os
+          from pathlib import Path
+
+          def generate_index():
+              result = {"tr": {}, "en": {}}
+              
+              for lang in ["tr", "en"]:
+                  blog_path = Path(f"blog/{lang}")
+                  
+                  if not blog_path.exists():
+                      continue
+                  
+                  for folder in blog_path.iterdir():
+                      if folder.is_dir():
+                          folder_name = folder.name
+                          md_files = [f.name for f in folder.glob("*.md")]
+                          
+                          if md_files:
+                              result[lang][folder_name] = sorted(md_files)
+              
+              return result
+
+          # JSON dosyasını oluştur
+          index_data = generate_index()
+          with open("blog-index.json", "w", encoding="utf-8") as f:
+              json.dump(index_data, f, ensure_ascii=False, indent=2)
+
+          print("Blog index generated successfully!")
+          PYTHON_SCRIPT
           
       - name: Commit and push if changed
         run: |
