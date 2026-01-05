@@ -1,8 +1,33 @@
 {
   "tr": {
-    "testfolder": ["test.md"]
+    "testfolder": {
+      "files": [
+        {
+          "name": "Markdown-test yazısı.md",
+          "size": 253,
+          "modified": "2026-01-05T19:11:09.090930Z"
+        },
+        {
+          "name": "test.md",
+          "size": 36,
+          "modified": "2026-01-05T19:11:09.090930Z"
+        }
+      ],
+      "path": "testfolder"
+    }
   },
   "en": {
-    "testfolder": ["test.md"]
-  }
+    "testfolder": {
+      "files": [
+        {
+          "name": "test.md",
+          "size": 22,
+          "modified": "2026-01-05T19:11:09.089930Z"
+        }
+      ],
+      "path": "testfolder"
+    }
+  },
+  "generated_at": "2026-01-05T19:11:09.156289Z",
+  "cache_bust": 1767640269
 }
