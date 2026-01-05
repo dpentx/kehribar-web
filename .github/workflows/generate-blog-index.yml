@@ -11,9 +11,13 @@ on:
 jobs:
   generate-index:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Bu satır eklendi
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}  # Bu satır eklendi
         
       - name: Generate blog index
         run: |
