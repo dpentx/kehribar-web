@@ -12,23 +12,28 @@ jobs:
   generate-index:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Bu satır eklendi
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}  # Bu satır eklendi
+          token: ${{ secrets.GITHUB_TOKEN }}
         
       - name: Generate blog index
         run: |
-          # Python ile JSON üret (özel karakterleri düzgün işler)
           python3 << 'PYTHON_SCRIPT'
           import json
           import os
           from pathlib import Path
+          from datetime import datetime
 
           def generate_index():
-              result = {"tr": {}, "en": {}}
+              result = {
+                  "tr": {},
+                  "en": {},
+                  "generated_at": datetime.utcnow().isoformat() + "Z",
+                  "cache_bust": int(datetime.utcnow().timestamp())
+              }
               
               for lang in ["tr", "en"]:
                   blog_path = Path(f"blog/{lang}")
@@ -36,13 +41,42 @@ jobs:
                   if not blog_path.exists():
                       continue
                   
-                  for folder in blog_path.iterdir():
-                      if folder.is_dir():
-                          folder_name = folder.name
-                          md_files = [f.name for f in folder.glob("*.md")]
-                          
-                          if md_files:
-                              result[lang][folder_name] = sorted(md_files)
+                  # Tüm alt klasörleri ve dosyaları recursive olarak tara
+                  for md_file in blog_path.rglob("*.md"):
+                      # blog/tr/ veya blog/en/ dan sonraki relative path'i al
+                      relative_path = md_file.relative_to(blog_path)
+                      
+                      # Klasör yapısını koru
+                      folder_path = str(relative_path.parent)
+                      file_name = md_file.name
+                      
+                      # Root'taki dosyalar için "." kullan
+                      if folder_path == ".":
+                          folder_key = "_root"
+                      else:
+                          folder_key = folder_path
+                      
+                      # Klasör yoksa oluştur
+                      if folder_key not in result[lang]:
+                          result[lang][folder_key] = {
+                              "files": [],
+                              "path": folder_path if folder_path != "." else ""
+                          }
+                      
+                      # Dosya bilgilerini ekle
+                      file_info = {
+                          "name": file_name,
+                          "size": md_file.stat().st_size,
+                          "modified": datetime.fromtimestamp(md_file.stat().st_mtime).isoformat() + "Z"
+                      }
+                      
+                      result[lang][folder_key]["files"].append(file_info)
+              
+              # Dosyaları alfabetik sırala
+              for lang in ["tr", "en"]:
+                  for folder_key in result[lang]:
+                      if isinstance(result[lang][folder_key], dict) and "files" in result[lang][folder_key]:
+                          result[lang][folder_key]["files"].sort(key=lambda x: x["name"])
               
               return result
 
@@ -52,6 +86,7 @@ jobs:
               json.dump(index_data, f, ensure_ascii=False, indent=2)
 
           print("Blog index generated successfully!")
+          print(f"Total folders indexed: TR={len(index_data['tr'])}, EN={len(index_data['en'])}")
           PYTHON_SCRIPT
           
       - name: Commit and push if changed
@@ -61,7 +96,21 @@ jobs:
           git add blog-index.json
           git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update blog index [skip ci]" && git push)
       
-      - name: Purge CDN cache
+      - name: Purge CDN cache (multiple attempts)
         run: |
-          sleep 5
-          curl -X POST "https://purge.jsdelivr.net/gh/${{ github.repository }}@main/blog-index.json"
+          # Blog index'i temizle
+          for i in {1..3}; do
+            echo "Attempt $i: Purging blog-index.json"
+            curl -X POST "https://purge.jsdelivr.net/gh/${{ github.repository }}@main/blog-index.json"
+            sleep 2
+          done
+          
+          # Tüm blog klasörünü temizle
+          echo "Purging entire blog directory"
+          curl -X POST "https://purge.jsdelivr.net/gh/${{ github.repository }}@main/blog/"
+          
+          sleep 3
+          
+          # Özel olarak TR ve EN klasörlerini temizle
+          curl -X POST "https://purge.jsdelivr.net/gh/${{ github.repository }}@main/blog/tr/"
+          curl -X POST "https://purge.jsdelivr.net/gh/${{ github.repository }}@main/blog/en/"
