@@ -217,7 +217,7 @@
 
         .contact-links {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmin(250px, 1fr));
             gap: 1rem;
             margin-top: 2rem;
         }
@@ -626,12 +626,18 @@
             if (blogIndex) return blogIndex;
             
             try {
-                const response = await fetch(`https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@main/blog-index.json`);
+                // Cache busting için timestamp ekle
+                const timestamp = Math.floor(Date.now() / 1000 / 60);
+                const response = await fetch(
+                    `https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@main/blog-index.json?t=${timestamp}`,
+                    { cache: 'no-cache' }
+                );
                 blogIndex = await response.json();
+                console.log('Blog index loaded:', blogIndex);
                 return blogIndex;
             } catch (error) {
                 console.error('Error loading blog index:', error);
-                return { tr: {}, en: {} };
+                return { tr: {}, en: {}, cache_bust: 0 };
             }
         }
 
@@ -654,41 +660,71 @@
             try {
                 const index = await loadBlogIndex();
                 const langIndex = index[langFolder] || {};
+                const cacheBust = index.cache_bust || Date.now();
 
                 blogLoading.style.display = 'none';
 
                 if (currentPath.length === 0) {
-                    const folders = Object.keys(langIndex);
+                    // Root seviyesindeki klasörleri göster
+                    const folders = Object.keys(langIndex).filter(key => key !== '_root');
                     
-                    if (folders.length === 0) {
+                    // Root seviyesindeki dosyaları göster
+                    if (langIndex['_root'] && langIndex['_root'].files) {
+                        langIndex['_root'].files.forEach(fileInfo => {
+                            const li = document.createElement('li');
+                            li.className = 'file-item';
+                            li.innerHTML = `<i class="fas fa-file-alt"></i> ${fileInfo.name}`;
+                            
+                            const cdnFileUrl = `https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@main/blog/${langFolder}/${fileInfo.name}?t=${cacheBust}`;
+                            li.onclick = () => openMarkdownFile(cdnFileUrl, fileInfo.name);
+                            blogList.appendChild(li);
+                        });
+                    }
+                    
+                    if (folders.length === 0 && (!langIndex['_root'] || langIndex['_root'].files.length === 0)) {
                         blogList.innerHTML = '<li style="padding: 1rem; color: var(--text-dim); text-align: center;">No blog posts yet</li>';
                         return;
                     }
                     
-                    folders.forEach(folder => {
+                    folders.forEach(folderKey => {
+                        const folderData = langIndex[folderKey];
+                        const displayName = folderData.path || folderKey;
+                        
                         const li = document.createElement('li');
                         li.className = 'folder-item';
-                        li.innerHTML = `<i class="fas fa-folder"></i> ${folder}`;
-                        li.onclick = () => navigateToFolder(folder);
+                        li.innerHTML = `<i class="fas fa-folder"></i> ${displayName} <span style="color: var(--text-dim); font-size: 0.85rem;">(${folderData.files.length} files)</span>`;
+                        li.onclick = () => navigateToFolder(folderKey);
                         blogList.appendChild(li);
                     });
                 } else {
-                    const folderName = currentPath[0];
-                    const files = langIndex[folderName] || [];
+                    // Alt klasördeki dosyaları göster
+                    const currentFolderKey = currentPath.join('/');
+                    const folderData = langIndex[currentFolderKey];
                     
-                    if (files.length === 0) {
+                    if (!folderData || !folderData.files || folderData.files.length === 0) {
                         blogList.innerHTML = '<li style="padding: 1rem; color: var(--text-dim); text-align: center;">No files in this folder</li>';
                         return;
                     }
                     
-                    files.forEach(file => {
+                    folderData.files.forEach(fileInfo => {
                         const li = document.createElement('li');
                         li.className = 'file-item';
-                        li.innerHTML = `<i class="fas fa-file-alt"></i> ${file}`;
                         
-                        const timestamp = Math.floor(Date.now() / 1000 / 3600);
-                        const cdnFileUrl = `https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@main/blog/${langFolder}/${folderName}/${file}?t=${timestamp}`;
-                        li.onclick = () => openMarkdownFile(cdnFileUrl, file);
+                        // Dosya boyutunu human-readable yap
+                        const fileSize = fileInfo.size < 1024 ? 
+                            `${fileInfo.size}B` : 
+                            `${(fileInfo.size / 1024).toFixed(1)}KB`;
+                        
+                        li.innerHTML = `
+                            <i class="fas fa-file-alt"></i> 
+                            ${fileInfo.name}
+                            <span style="color: var(--text-dim); font-size: 0.75rem; margin-left: auto;">
+                                ${fileSize}
+                            </span>
+                        `;
+                        
+                        const cdnFileUrl = `https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@main/blog/${langFolder}/${currentFolderKey}/${fileInfo.name}?t=${cacheBust}`;
+                        li.onclick = () => openMarkdownFile(cdnFileUrl, fileInfo.name);
                         blogList.appendChild(li);
                     });
                 }
@@ -707,8 +743,10 @@
                 const langIndex = index[langFolder] || {};
                 
                 let count = 0;
-                Object.values(langIndex).forEach(files => {
-                    count += files.length;
+                Object.values(langIndex).forEach(folderData => {
+                    if (folderData.files) {
+                        count += folderData.files.length;
+                    }
                 });
                 
                 return count;
@@ -725,10 +763,11 @@
             loadBlogContent();
         }
 
-        function navigateToFolder(folderName) {
-            currentPath.push(folderName);
+        function navigateToFolder(folderKey) {
+            // folderKey zaten tam path'i içeriyor
+            currentPath = folderKey.split('/');
             const langFolder = currentLang === 'tr' ? 'tr' : 'en';
-            window.location.hash = `blog/${langFolder}/${currentPath.join('/')}`;
+            window.location.hash = `blog/${langFolder}/${folderKey}`;
             loadBlogContent();
         }
 
@@ -897,8 +936,9 @@
                             const langFolder = currentLang === 'tr' ? 'tr' : 'en';
                             const folderPath = parts.slice(0, -1).join('/');
                             const fullPath = folderPath ? `${langFolder}/${folderPath}/${filename}` : `${langFolder}/${filename}`;
-                            const timestamp = Math.floor(Date.now() / 1000 / 3600);
-                            const fileUrl = `https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@main/blog/${fullPath}?t=${timestamp}`;
+                            const index = blogIndex || {};
+                            const cacheBust = index.cache_bust || Date.now();
+                            const fileUrl = `https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@main/blog/${fullPath}?t=${cacheBust}`;
                             
                             const modal = document.getElementById('blog-modal');
                             const content = document.getElementById('modal-content');
@@ -936,4 +976,4 @@
         }
     </script>
 </body>
-</html>
+    </html>
