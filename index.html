@@ -217,7 +217,7 @@
 
         .contact-links {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmin(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1rem;
             margin-top: 2rem;
         }
@@ -495,7 +495,7 @@
         let currentPath = [];
         let currentLang = localStorage.getItem('preferredLanguage') || 'tr';
         let isReadingBlog = false;
-        let blogIndex = null;
+        let blogCache = {};
 
         const translations = {
             tr: {
@@ -622,22 +622,55 @@
             }
         }
 
-        async function loadBlogIndex() {
-            if (blogIndex) return blogIndex;
-            
+        // jsDelivr directory listing API kullanarak klasör içeriğini oku
+        async function fetchDirectoryContents(path) {
+            const cacheKey = path;
+            if (blogCache[cacheKey]) {
+                return blogCache[cacheKey];
+            }
+
             try {
-                // Cache busting için timestamp ekle
-                const timestamp = Math.floor(Date.now() / 1000 / 60);
-                const response = await fetch(
-                    `https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@main/blog-index.json?t=${timestamp}`,
-                    { cache: 'no-cache' }
-                );
-                blogIndex = await response.json();
-                console.log('Blog index loaded:', blogIndex);
-                return blogIndex;
+                const url = `https://data.jsdelivr.com/v1/packages/gh/${githubUsername}/${repoName}/resolved?specifier=main`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                // Tüm dosyaları filtrele
+                const allFiles = data.files || [];
+                const blogPath = `blog/${path}`;
+                
+                // İstenen path'teki dosyaları bul
+                const items = {
+                    folders: new Set(),
+                    files: []
+                };
+                
+                allFiles.forEach(file => {
+                    if (file.name.startsWith(blogPath)) {
+                        const relativePath = file.name.substring(blogPath.length);
+                        if (!relativePath) return;
+                        
+                        const parts = relativePath.split('/').filter(p => p);
+                        
+                        if (parts.length === 1 && parts[0].endsWith('.md')) {
+                            // Direkt dosya
+                            items.files.push(parts[0]);
+                        } else if (parts.length > 1) {
+                            // Alt klasör
+                            items.folders.add(parts[0]);
+                        }
+                    }
+                });
+                
+                const result = {
+                    folders: Array.from(items.folders).sort(),
+                    files: items.files.sort()
+                };
+                
+                blogCache[cacheKey] = result;
+                return result;
             } catch (error) {
-                console.error('Error loading blog index:', error);
-                return { tr: {}, en: {}, cache_bust: 0 };
+                console.error('Error fetching directory:', error);
+                return { folders: [], files: [] };
             }
         }
 
@@ -658,78 +691,42 @@
             });
 
             try {
-                const index = await loadBlogIndex();
-                const langIndex = index[langFolder] || {};
-                const cacheBust = index.cache_bust || Date.now();
+                const fullPath = currentPath.length > 0 ? `${langFolder}/${currentPath.join('/')}` : langFolder;
+                const contents = await fetchDirectoryContents(fullPath);
 
                 blogLoading.style.display = 'none';
 
-                if (currentPath.length === 0) {
-                    // Root seviyesindeki klasörleri göster
-                    const folders = Object.keys(langIndex).filter(key => key !== '_root');
-                    
-                    // Root seviyesindeki dosyaları göster
-                    if (langIndex['_root'] && langIndex['_root'].files) {
-                        langIndex['_root'].files.forEach(fileInfo => {
-                            const li = document.createElement('li');
-                            li.className = 'file-item';
-                            li.innerHTML = `<i class="fas fa-file-alt"></i> ${fileInfo.name}`;
-                            
-                            const cdnFileUrl = `https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@main/blog/${langFolder}/${fileInfo.name}?t=${cacheBust}`;
-                            li.onclick = () => openMarkdownFile(cdnFileUrl, fileInfo.name);
-                            blogList.appendChild(li);
-                        });
-                    }
-                    
-                    if (folders.length === 0 && (!langIndex['_root'] || langIndex['_root'].files.length === 0)) {
-                        blogList.innerHTML = '<li style="padding: 1rem; color: var(--text-dim); text-align: center;">No blog posts yet</li>';
-                        return;
-                    }
-                    
-                    folders.forEach(folderKey => {
-                        const folderData = langIndex[folderKey];
-                        const displayName = folderData.path || folderKey;
-                        
-                        const li = document.createElement('li');
-                        li.className = 'folder-item';
-                        li.innerHTML = `<i class="fas fa-folder"></i> ${displayName} <span style="color: var(--text-dim); font-size: 0.85rem;">(${folderData.files.length} files)</span>`;
-                        li.onclick = () => navigateToFolder(folderKey);
-                        blogList.appendChild(li);
-                    });
-                } else {
-                    // Alt klasördeki dosyaları göster
-                    const currentFolderKey = currentPath.join('/');
-                    const folderData = langIndex[currentFolderKey];
-                    
-                    if (!folderData || !folderData.files || folderData.files.length === 0) {
-                        blogList.innerHTML = '<li style="padding: 1rem; color: var(--text-dim); text-align: center;">No files in this folder</li>';
-                        return;
-                    }
-                    
-                    folderData.files.forEach(fileInfo => {
-                        const li = document.createElement('li');
-                        li.className = 'file-item';
-                        
-                        // Dosya boyutunu human-readable yap
-                        const fileSize = fileInfo.size < 1024 ? 
-                            `${fileInfo.size}B` : 
-                            `${(fileInfo.size / 1024).toFixed(1)}KB`;
-                        
-                        li.innerHTML = `
-                            <i class="fas fa-file-alt"></i> 
-                            ${fileInfo.name}
-                            <span style="color: var(--text-dim); font-size: 0.75rem; margin-left: auto;">
-                                ${fileSize}
-                            </span>
-                        `;
-                        
-                        const cdnFileUrl = `https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@main/blog/${langFolder}/${currentFolderKey}/${fileInfo.name}?t=${cacheBust}`;
-                        li.onclick = () => openMarkdownFile(cdnFileUrl, fileInfo.name);
-                        blogList.appendChild(li);
-                    });
+                if (contents.folders.length === 0 && contents.files.length === 0) {
+                    blogList.innerHTML = '<li style="padding: 1rem; color: var(--text-dim); text-align: center;">No blog posts yet</li>';
+                    return;
                 }
 
-                document.getElementById("blog-count").textContent = await countAllMarkdownFiles();
+                // Klasörleri göster
+                contents.folders.forEach(folder => {
+                    const li = document.createElement('li');
+                    li.className = 'folder-item';
+                    li.innerHTML = `<i class="fas fa-folder"></i> ${folder}`;
+                    li.onclick = () => navigateToFolder(folder);
+                    blogList.appendChild(li);
+                });
+
+                // Dosyaları göster
+                contents.files.forEach(file => {
+                    const li = document.createElement('li');
+                    li.className = 'file-item';
+                    li.innerHTML = `<i class="fas fa-file-alt"></i> ${file}`;
+                    
+                    const timestamp = Math.floor(Date.now() / 1000 / 3600);
+                    const filePath = currentPath.length > 0 ? 
+                        `blog/${langFolder}/${currentPath.join('/')}/${file}` : 
+                        `blog/${langFolder}/${file}`;
+                    const cdnFileUrl = `https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@main/${filePath}?t=${timestamp}`;
+                    li.onclick = () => openMarkdownFile(cdnFileUrl, file);
+                    blogList.appendChild(li);
+                });
+
+                // Blog sayısını güncelle
+                await countAllMarkdownFiles();
             } catch (error) {
                 console.error('Blog loading error:', error);
                 blogLoading.innerHTML = `<p style="color: var(--red);">${translations[currentLang]['error']}</p>`;
@@ -738,19 +735,26 @@
 
         async function countAllMarkdownFiles() {
             try {
-                const index = await loadBlogIndex();
                 const langFolder = currentLang === 'tr' ? 'tr' : 'en';
-                const langIndex = index[langFolder] || {};
                 
-                let count = 0;
-                Object.values(langIndex).forEach(folderData => {
-                    if (folderData.files) {
-                        count += folderData.files.length;
+                // Tüm klasör yapısını recursive olarak tara
+                async function countRecursive(path) {
+                    const contents = await fetchDirectoryContents(path);
+                    let count = contents.files.length;
+                    
+                    for (const folder of contents.folders) {
+                        const subPath = path ? `${path}/${folder}` : folder;
+                        count += await countRecursive(`${langFolder}/${folder}`);
                     }
-                });
+                    
+                    return count;
+                }
                 
+                const count = await countRecursive(langFolder);
+                document.getElementById("blog-count").textContent = count;
                 return count;
             } catch {
+                document.getElementById("blog-count").textContent = '~';
                 return 0;
             }
         }
@@ -763,11 +767,10 @@
             loadBlogContent();
         }
 
-        function navigateToFolder(folderKey) {
-            // folderKey zaten tam path'i içeriyor
-            currentPath = folderKey.split('/');
+        function navigateToFolder(folderName) {
+            currentPath.push(folderName);
             const langFolder = currentLang === 'tr' ? 'tr' : 'en';
-            window.location.hash = `blog/${langFolder}/${folderKey}`;
+            window.location.hash = `blog/${langFolder}/${currentPath.join('/')}`;
             loadBlogContent();
         }
 
@@ -889,11 +892,7 @@
             
             const hash = window.location.hash.slice(1);
             if (!hash || hash === 'home') {
-                loadBlogIndex().then(() => {
-                    countAllMarkdownFiles().then(count => {
-                        document.getElementById("blog-count").textContent = count;
-                    });
-                });
+                countAllMarkdownFiles();
             }
             
             loadProjects();
@@ -907,11 +906,7 @@
             
             if (!hash || hash === 'home') {
                 showSection('home');
-                loadBlogIndex().then(() => {
-                    countAllMarkdownFiles().then(count => {
-                        document.getElementById("blog-count").textContent = count;
-                    });
-                });
+                countAllMarkdownFiles();
             } else if (hash === 'projects') {
                 showSection('projects');
             } else if (hash === 'contact') {
@@ -935,10 +930,11 @@
                             const filename = lastPart;
                             const langFolder = currentLang === 'tr' ? 'tr' : 'en';
                             const folderPath = parts.slice(0, -1).join('/');
-                            const fullPath = folderPath ? `${langFolder}/${folderPath}/${filename}` : `${langFolder}/${filename}`;
-                            const index = blogIndex || {};
-                            const cacheBust = index.cache_bust || Date.now();
-                            const fileUrl = `https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@main/blog/${fullPath}?t=${cacheBust}`;
+                            const filePath = folderPath ? 
+                                `blog/${langFolder}/${folderPath}/${filename}` : 
+                                `blog/${langFolder}/${filename}`;
+                            const timestamp = Math.floor(Date.now() / 1000 / 3600);
+                            const fileUrl = `https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@main/${filePath}?t=${timestamp}`;
                             
                             const modal = document.getElementById('blog-modal');
                             const content = document.getElementById('modal-content');
@@ -976,4 +972,4 @@
         }
     </script>
 </body>
-    </html>
+                </html>
