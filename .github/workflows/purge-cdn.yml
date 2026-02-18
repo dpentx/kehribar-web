@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - beta
 
 jobs:
   purge:
@@ -11,4 +12,12 @@ jobs:
     steps:
       - name: Purge jsDelivr Cache
         run: |
+          # Main branch
           curl -X POST https://purge.jsdelivr.net/gh/${{ github.repository }}@main/
+          curl -X POST https://purge.jsdelivr.net/gh/${{ github.repository }}@main/contributions.nix
+          curl -X POST https://purge.jsdelivr.net/gh/${{ github.repository }}@main/blog-index.json
+
+          # Beta branch
+          curl -X POST https://purge.jsdelivr.net/gh/${{ github.repository }}@beta/
+          curl -X POST https://purge.jsdelivr.net/gh/${{ github.repository }}@beta/contributions.nix
+          curl -X POST https://purge.jsdelivr.net/gh/${{ github.repository }}@beta/blog-index.json
