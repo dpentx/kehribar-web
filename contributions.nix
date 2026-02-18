@@ -2,7 +2,7 @@
 # Yeni proje eklemek için bu bloğu kopyala ve düzenle
 
 Metrolist = {
-  url = "https://github.com/metrolist/metrolist";
+  url = "https://github.com/MetrolistGroup/Metrolist";
   icon = "icons/metrolist.png";
   desc = "Android Youtube Music Clienti";
   desc_en = "Youtube Music Client for Android";
