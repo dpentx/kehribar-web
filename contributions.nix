@@ -4,7 +4,7 @@
 Metrolist = {
   url = "https://github.com/MetrolistGroup/Metrolist";
   icon = "icons/metrolist.png";
-  desc = "Android Youtube Music Clienti";
+  desc = "Android için Youtube Music Clienti";
   desc_en = "Youtube Music Client for Android";
   type = "translation";
 };
