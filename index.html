@@ -362,6 +362,12 @@
         const githubUsername = "dpentx";
         const repoName = "dpentx";
 
+        // Hostname'e göre branch otomatik seçilir
+        const branch = (
+            window.location.hostname === "kehribar.vercel.app" ||
+            window.location.hostname === "localhost"
+        ) ? "main" : "beta";
+
         let currentPath = [];
         let currentLang = localStorage.getItem('preferredLanguage') || 'tr';
         let isReadingBlog = false;
@@ -452,7 +458,7 @@
 
             try {
                 const ts = Math.floor(Date.now() / 1000 / 3600);
-                const url = `https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@main/contributions.nix?t=${ts}`;
+                const url = `https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@${branch}/contributions.nix?t=${ts}`;
                 const res = await fetch(url);
 
                 if (!res.ok) throw new Error('Dosya bulunamadı');
@@ -480,7 +486,7 @@
 
                     const iconHtml = entry.icon
                         ? `<img class="contribution-icon"
-                               src="https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@main/${entry.icon}"
+                               src="https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@${branch}/${entry.icon}"
                                alt="${entry._name}"
                                onerror="this.outerHTML='<div class=\\'contribution-icon-placeholder\\'><i class=\\'fas fa-puzzle-piece\\'></i></div>'">`
                         : `<div class="contribution-icon-placeholder"><i class="fas fa-puzzle-piece"></i></div>`;
@@ -561,7 +567,7 @@
             if (blogIndexData) return blogIndexData;
             try {
                 const ts = Math.floor(Date.now() / 1000 / 3600);
-                const res = await fetch(`https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@main/blog-index.json?t=${ts}`);
+                const res = await fetch(`https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@${branch}/blog-index.json?t=${ts}`);
                 blogIndexData = await res.json();
                 return blogIndexData;
             } catch { return null; }
@@ -633,7 +639,7 @@
                     li.innerHTML = `<i class="fas fa-file-alt"></i> ${file}`;
                     const ts = Math.floor(Date.now() / 1000 / 3600);
                     const filePath = currentPath.length > 0 ? `blog/${langFolder}/${currentPath.join('/')}/${file}` : `blog/${langFolder}/${file}`;
-                    li.onclick = () => openMarkdownFile(`https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@main/${filePath}?t=${ts}`, file);
+                    li.onclick = () => openMarkdownFile(`https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@${branch}/${filePath}?t=${ts}`, file);
                     blogList.appendChild(li);
                 });
                 await countAllMarkdownFiles();
@@ -762,7 +768,7 @@
                             modal.classList.add('active');
                             isReadingBlog = true;
                             content.innerHTML = `<div class="loading"><i class="fas fa-spinner fa-spin"></i></div>`;
-                            fetch(`https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@main/${fp}?t=${ts}`)
+                            fetch(`https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@${branch}/${fp}?t=${ts}`)
                                 .then(r => r.text())
                                 .then(md => { content.innerHTML = `<h1 style="color:var(--green);margin-bottom:1rem;">${last.replace('.md','')}</h1>${marked.parse(md)}`; })
                                 .catch(() => { content.innerHTML = `<p style="color:var(--red);">${translations[currentLang]['error']}</p>`; });
@@ -782,4 +788,4 @@
         });
     </script>
 </body>
-  </html>
+                </html>
