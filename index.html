@@ -372,6 +372,7 @@
         let currentLang = localStorage.getItem('preferredLanguage') || 'tr';
         let isReadingBlog = false;
         let blogIndexData = null;
+        let contributionsLoading = false;
 
         const translations = {
             tr: {
@@ -450,6 +451,9 @@
 
         // ─── Contributions loader ──────────────────────────────────────
         async function loadContributions() {
+            if (contributionsLoading) return;
+            contributionsLoading = true;
+
             const grid = document.getElementById('contributions-grid');
             const loading = document.getElementById('contributions-loading');
 
@@ -504,6 +508,8 @@
 
             } catch (err) {
                 loading.innerHTML = `<p style="color:var(--red);">${translations[currentLang]['error']}: ${err.message}</p>`;
+            } finally {
+                contributionsLoading = false;
             }
         }
 
