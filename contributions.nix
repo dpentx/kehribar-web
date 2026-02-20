@@ -25,7 +25,7 @@ Kvaesitso = {
   type = "translation";
 };
 
-Encore-Tweaks = {
+Encore Tweaks = {
   url = "https://github.com/Rem01Gaming/encore";
   icon = "icons/encore.png"
   desc = "Oyun optimizasyonu için Magisk modülü";
@@ -33,7 +33,7 @@ Encore-Tweaks = {
   type = "translation";
 };
 
-F-droid = {
+F droid = {
   url = "https://f-droid.org";
   icon = "icons/fdroid.png";
   desc = "Açık kaynak yazılımlar için uygulama mağazası";
