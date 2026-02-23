@@ -17,13 +17,10 @@
             --blue: #7fbbb3;
             --red: #e67e80;
             --yellow: #dbbc7f;
+            --orange: #e69875;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', -apple-system, sans-serif;
@@ -32,11 +29,7 @@
             line-height: 1.6;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 3rem 1.5rem;
-        }
+        .container { max-width: 800px; margin: 0 auto; padding: 3rem 1.5rem; }
 
         header {
             text-align: center;
@@ -45,34 +38,11 @@
             border-bottom: 1px solid rgba(167, 192, 128, 0.2);
         }
 
-        .avatar {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            margin: 0 auto 1.5rem;
-            border: 2px solid var(--green);
-        }
+        .avatar { width: 120px; height: 120px; border-radius: 50%; margin: 0 auto 1.5rem; border: 2px solid var(--green); }
+        h1 { font-size: 2rem; color: var(--green); margin-bottom: 0.5rem; }
+        .bio { color: var(--text-dim); font-size: 0.95rem; max-width: 600px; margin: 0 auto; }
 
-        h1 {
-            font-size: 2rem;
-            color: var(--green);
-            margin-bottom: 0.5rem;
-        }
-
-        .bio {
-            color: var(--text-dim);
-            font-size: 0.95rem;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        nav {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin: 2rem 0;
-            flex-wrap: wrap;
-        }
+        nav { display: flex; gap: 1rem; justify-content: center; margin: 2rem 0; flex-wrap: wrap; }
 
         .nav-btn {
             padding: 0.5rem 1rem;
@@ -84,61 +54,23 @@
             transition: all 0.2s;
             font-size: 0.9rem;
         }
+        .nav-btn:hover { color: var(--green); background: var(--bg-dark); }
+        .nav-btn.active { color: var(--bg-dark); background: var(--green); }
 
-        .nav-btn:hover {
-            color: var(--green);
-            background: var(--bg-dark);
-        }
-
-        .nav-btn.active {
-            color: var(--bg-dark);
-            background: var(--green);
-        }
-
-        .section {
-            display: none;
-        }
-
-        .section.active {
-            display: block;
-            animation: fadeIn 0.3s;
-        }
+        .section { display: none; }
+        .section.active { display: block; animation: fadeIn 0.3s; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin: 2rem 0;
-        }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin: 2rem 0; }
+        .stat-card { background: var(--bg-light); padding: 1.5rem; border-radius: 8px; text-align: center; }
+        .stat-value { font-size: 2rem; font-weight: bold; color: var(--green); }
+        .stat-label { color: var(--text-dim); font-size: 0.85rem; margin-top: 0.25rem; }
 
-        .stat-card {
-            background: var(--bg-light);
-            padding: 1.5rem;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--green);
-        }
-
-        .stat-label {
-            color: var(--text-dim);
-            font-size: 0.85rem;
-            margin-top: 0.25rem;
-        }
-
-        .file-list {
-            list-style: none;
-        }
-
+        .file-list { list-style: none; }
         .file-item, .folder-item {
             padding: 0.75rem 1rem;
             background: var(--bg-light);
@@ -150,35 +82,13 @@
             align-items: center;
             gap: 0.75rem;
         }
+        .file-item:hover, .folder-item:hover { background: var(--bg-dark); color: var(--green); }
+        .folder-item { border-left: 3px solid var(--blue); }
+        .file-item { border-left: 3px solid var(--yellow); }
 
-        .file-item:hover, .folder-item:hover {
-            background: var(--bg-dark);
-            color: var(--green);
-        }
-
-        .folder-item {
-            border-left: 3px solid var(--blue);
-        }
-
-        .file-item {
-            border-left: 3px solid var(--yellow);
-        }
-
-        .breadcrumb {
-            margin-bottom: 1rem;
-            color: var(--text-dim);
-            font-size: 0.9rem;
-        }
-
-        .breadcrumb a {
-            color: var(--green);
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .breadcrumb a:hover {
-            text-decoration: underline;
-        }
+        .breadcrumb { margin-bottom: 1rem; color: var(--text-dim); font-size: 0.9rem; }
+        .breadcrumb a { color: var(--green); text-decoration: none; cursor: pointer; }
+        .breadcrumb a:hover { text-decoration: underline; }
 
         .project-card {
             background: var(--bg-light);
@@ -189,39 +99,105 @@
             transition: all 0.2s;
             cursor: pointer;
         }
+        .project-card:hover { background: var(--bg-dark); border-left-color: var(--blue); }
+        .project-title { font-size: 1.1rem; font-weight: 600; color: var(--text); margin-bottom: 0.5rem; }
+        .project-desc { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 0.75rem; }
+        .project-meta { display: flex; gap: 1rem; font-size: 0.85rem; color: var(--text-dim); }
 
-        .project-card:hover {
-            background: var(--bg-dark);
-            border-left-color: var(--blue);
-        }
-
-        .project-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 0.5rem;
-        }
-
-        .project-desc {
-            color: var(--text-dim);
-            font-size: 0.9rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .project-meta {
-            display: flex;
+        /* === CONTRIBUTIONS === */
+        .contributions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .contribution-card {
+            background: var(--bg-light);
+            border-radius: 10px;
+            padding: 1.25rem;
+            border: 1px solid rgba(167, 192, 128, 0.1);
+            border-left: 3px solid var(--orange);
+            transition: all 0.25s ease;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .contribution-card:hover {
+            background: var(--bg-dark);
+            border-left-color: var(--green);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .contribution-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .contribution-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: contain;
+            background: var(--bg-dark);
+            padding: 4px;
+            flex-shrink: 0;
+        }
+
+        .contribution-icon-placeholder {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: var(--bg-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dim);
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .contribution-name {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text);
+        }
+
+        .contribution-desc {
             font-size: 0.85rem;
             color: var(--text-dim);
+            flex: 1;
         }
 
-        .contact-links {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            margin-top: 2rem;
+        .contribution-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.75rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 99px;
+            background: rgba(167, 192, 128, 0.12);
+            color: var(--green);
+            width: fit-content;
         }
 
+        .contributions-intro {
+            background: var(--bg-light);
+            border-radius: 8px;
+            padding: 1.25rem 1.5rem;
+            border-left: 3px solid var(--blue);
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        .contributions-intro strong { color: var(--text); }
+
+        /* === CONTACT === */
+        .contact-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 2rem; }
         .contact-link {
             padding: 1.5rem;
             background: var(--bg-light);
@@ -236,165 +212,46 @@
             gap: 0.75rem;
             border: 2px solid transparent;
         }
+        .contact-link:hover { background: var(--bg-dark); border-color: var(--green); transform: translateY(-4px); }
+        .contact-link i { font-size: 2.5rem; color: var(--green); }
+        .contact-link .contact-title { font-weight: 600; font-size: 1.1rem; }
+        .contact-link .contact-desc { color: var(--text-dim); font-size: 0.85rem; }
 
-        .contact-link:hover {
-            background: var(--bg-dark);
-            border-color: var(--green);
-            transform: translateY(-4px);
-        }
-
-        .contact-link i {
-            font-size: 2.5rem;
-            color: var(--green);
-        }
-
-        .contact-link .contact-title {
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .contact-link .contact-desc {
-            color: var(--text-dim);
-            font-size: 0.85rem;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(35, 42, 46, 0.95);
-            z-index: 1000;
-            overflow-y: auto;
-        }
-
-        .modal.active {
-            display: block;
-        }
-
-        .modal-content {
-            max-width: 800px;
-            margin: 2rem auto;
-            background: var(--bg);
-            padding: 2rem;
-            border-radius: 8px;
-            position: relative;
-        }
-
+        /* === MODAL === */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(35, 42, 46, 0.95); z-index: 1000; overflow-y: auto; }
+        .modal.active { display: block; }
+        .modal-content { max-width: 800px; margin: 2rem auto; background: var(--bg); padding: 2rem; border-radius: 8px; position: relative; }
         .modal-close {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: var(--red);
-            color: white;
-            border: none;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: transform 0.2s;
+            position: absolute; top: 1rem; right: 1rem;
+            background: var(--red); color: white; border: none;
+            width: 32px; height: 32px; border-radius: 50%;
+            cursor: pointer; transition: transform 0.2s;
         }
+        .modal-close:hover { transform: scale(1.1); }
 
-        .modal-close:hover {
-            transform: scale(1.1);
-        }
+        .markdown-content { color: var(--text); }
+        .markdown-content h1, .markdown-content h2, .markdown-content h3 { color: var(--green); margin-top: 1.5rem; margin-bottom: 0.5rem; }
+        .markdown-content code { background: var(--bg-dark); padding: 0.2rem 0.4rem; border-radius: 3px; color: var(--yellow); }
+        .markdown-content pre { background: var(--bg-dark); padding: 1rem; border-radius: 6px; overflow-x: auto; }
+        .markdown-content pre code { background: none; padding: 0; }
+        .markdown-content a { color: var(--blue); text-decoration: underline; }
+        .markdown-content a:hover { color: var(--green); }
 
-        .markdown-content {
-            color: var(--text);
-        }
+        /* === LANG SWITCHER === */
+        .lang-switcher { position: fixed; top: 0; right: 0; display: flex; gap: 0.5rem; z-index: 100; padding: 0.75rem; }
+        .lang-btn { padding: 0.5rem 0.75rem; background: var(--bg-light); border: none; color: var(--text-dim); cursor: pointer; border-radius: 6px; font-size: 0.85rem; transition: all 0.2s; }
+        .lang-btn:hover { color: var(--green); transform: translateY(-2px); }
+        .lang-btn.active { background: var(--green); color: var(--bg-dark); }
 
-        .markdown-content h1, .markdown-content h2, .markdown-content h3 {
-            color: var(--green);
-            margin-top: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .markdown-content code {
-            background: var(--bg-dark);
-            padding: 0.2rem 0.4rem;
-            border-radius: 3px;
-            color: var(--yellow);
-        }
-
-        .markdown-content pre {
-            background: var(--bg-dark);
-            padding: 1rem;
-            border-radius: 6px;
-            overflow-x: auto;
-        }
-
-        .markdown-content pre code {
-            background: none;
-            padding: 0;
-        }
-
-        .markdown-content a {
-            color: var(--blue);
-            text-decoration: underline;
-        }
-
-        .markdown-content a:hover {
-            color: var(--green);
-        }
-
-        .lang-switcher {
-            position: fixed;
-            top: 0;
-            right: 0;
-            display: flex;
-            gap: 0.5rem;
-            z-index: 100;
-            padding: 0.75rem;
-        }
-
-        .lang-btn {
-            padding: 0.5rem 0.75rem;
-            background: var(--bg-light);
-            border: none;
-            color: var(--text-dim);
-            cursor: pointer;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            transition: all 0.2s;
-        }
-
-        .lang-btn:hover {
-            color: var(--green);
-            transform: translateY(-2px);
-        }
-
-        .lang-btn.active {
-            background: var(--green);
-            color: var(--bg-dark);
-        }
-
-        .loading {
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-dim);
-        }
+        .loading { text-align: center; padding: 2rem; color: var(--text-dim); }
 
         @media (max-width: 640px) {
-            .container {
-                padding: 2rem 1rem;
-            }
-
-            h1 {
-                font-size: 1.5rem;
-            }
-
-            .stats {
-                grid-template-columns: 1fr;
-            }
-
-            .lang-switcher {
-                top: 0;
-                right: 0;
-                padding: 0.5rem;
-            }
-
-            .contact-links {
-                grid-template-columns: 1fr;
-            }
+            .container { padding: 2rem 1rem; }
+            h1 { font-size: 1.5rem; }
+            .stats { grid-template-columns: 1fr; }
+            .lang-switcher { top: 0; right: 0; padding: 0.5rem; }
+            .contact-links { grid-template-columns: 1fr; }
+            .contributions-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -415,9 +272,11 @@
             <button class="nav-btn active" data-page="home"><i class="fas fa-home"></i> <span data-i18n="nav-home">Anasayfa</span></button>
             <button class="nav-btn" data-page="blog"><i class="fas fa-folder"></i> <span data-i18n="nav-blog">Blog</span></button>
             <button class="nav-btn" data-page="projects"><i class="fas fa-code"></i> <span data-i18n="nav-projects">Projeler</span></button>
+            <button class="nav-btn" data-page="contributions"><i class="fas fa-language"></i> <span data-i18n="nav-contributions">Katkılar</span></button>
             <button class="nav-btn" data-page="contact"><i class="fas fa-envelope"></i> <span data-i18n="nav-contact">İletişim</span></button>
         </nav>
 
+        <!-- HOME -->
         <section id="home" class="section active">
             <div class="stats">
                 <div class="stat-card">
@@ -433,28 +292,39 @@
                     <div class="stat-label" data-i18n="stat-stars">Yıldızlar</div>
                 </div>
             </div>
-
             <div style="text-align: center; margin-top: 2rem;">
                 <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 0.5rem;">🌲 Visitor Counter 🌲</p>
                 <img src="https://count.getloli.com/@dpentx?name=everforest&theme=rule34&padding=7&offset=0&align=top&scale=1&pixelated=1&darkmode=1" alt="visitor count">
             </div>
         </section>
 
+        <!-- BLOG -->
         <section id="blog" class="section">
             <div id="blog-breadcrumb" class="breadcrumb"></div>
             <div id="blog-loading" class="loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="loading">Yükleniyor...</span></div>
             <ul id="blog-list" class="file-list"></ul>
         </section>
 
+        <!-- PROJECTS -->
         <section id="projects" class="section">
             <div id="projects-loading" class="loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="loading">Yükleniyor...</span></div>
             <div id="projects-list"></div>
         </section>
 
+        <!-- CONTRIBUTIONS -->
+        <section id="contributions" class="section">
+            <div class="contributions-intro">
+                <strong data-i18n="contributions-intro-title">Açık Kaynak Çeviri Katkıları</strong><br>
+                <span data-i18n="contributions-intro-text">Açık kaynak ekosistemine İngilizceden Türkçeye çeviri katkıları yapıyorum.</span>
+            </div>
+            <div id="contributions-loading" class="loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="loading">Yükleniyor...</span></div>
+            <div id="contributions-grid" class="contributions-grid"></div>
+        </section>
+
+        <!-- CONTACT -->
         <section id="contact" class="section">
             <h2 style="text-align: center; color: var(--green); margin-bottom: 1rem; font-size: 1.5rem;" data-i18n="contact-title">İletişim</h2>
             <p style="text-align: center; color: var(--text-dim); margin-bottom: 2rem;" data-i18n="contact-subtitle">Benimle iletişime geçmek için aşağıdaki platformları kullanabilirsiniz</p>
-            
             <div class="contact-links">
                 <a href="https://github.com/dpentx" target="_blank" class="contact-link">
                     <i class="fab fa-github"></i>
@@ -472,7 +342,6 @@
                     <div class="contact-desc" data-i18n="contact-instagram-desc">Günlük paylaşımlar ve sohbet</div>
                 </a>
             </div>
-
             <div style="margin-top: 2rem; padding: 1.5rem; background: var(--bg-light); border-radius: 8px; border-left: 3px solid var(--green);">
                 <p style="color: var(--text); margin-bottom: 0.5rem;"><i class="fas fa-handshake" style="color: var(--green);"></i> <strong data-i18n="contact-note-title">Açık kaynak katkıları</strong></p>
                 <p style="color: var(--text-dim); font-size: 0.9rem;" data-i18n="contact-note-text">Açık kaynak projelere katkı yapmaktan ve işbirliği yapmaktan mutluluk duyuyorum. GitHub üzerinden benimle iletişime geçebilir, projelerime katkı sağlayabilirsiniz.</p>
@@ -480,6 +349,7 @@
         </section>
     </div>
 
+    <!-- BLOG MODAL -->
     <div id="blog-modal" class="modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
@@ -492,16 +362,24 @@
         const githubUsername = "dpentx";
         const repoName = "dpentx";
 
+        // Hostname'e göre branch otomatik seçilir
+        const branch = (
+            window.location.hostname === "kehribar.vercel.app" ||
+            window.location.hostname === "localhost"
+        ) ? "main" : "beta";
+
         let currentPath = [];
         let currentLang = localStorage.getItem('preferredLanguage') || 'tr';
         let isReadingBlog = false;
         let blogIndexData = null;
+        let contributionsLoading = false;
 
         const translations = {
             tr: {
                 "nav-home": "Anasayfa",
                 "nav-blog": "Blog",
                 "nav-projects": "Projeler",
+                "nav-contributions": "Katkılar",
                 "nav-contact": "İletişim",
                 "stat-blogs": "Blog Yazıları",
                 "stat-repos": "Repolar",
@@ -516,12 +394,16 @@
                 "contact-mal-desc": "Anime izleme listem ve değerlendirmelerim",
                 "contact-instagram-desc": "Günlük paylaşımlar ve sohbet",
                 "contact-note-title": "Açık kaynak katkıları",
-                "contact-note-text": "Açık kaynak projelere katkı yapmaktan ve işbirliği yapmaktan mutluluk duyuyorum. GitHub üzerinden benimle iletişime geçebilir, projelerime katkı sağlayabilirsiniz."
+                "contact-note-text": "Açık kaynak projelere katkı yapmaktan ve işbirliği yapmaktan mutluluk duyuyorum. GitHub üzerinden benimle iletişime geçebilir, projelerime katkı sağlayabilirsiniz.",
+                "contributions-intro-title": "Açık Kaynak Çeviri Katkıları",
+                "contributions-intro-text": "Açık kaynak ekosistemine İngilizceden Türkçeye çeviri katkıları yapıyorum.",
+                "contribution-type-translation": "🌐 Türkçe Çeviri"
             },
             en: {
                 "nav-home": "Home",
                 "nav-blog": "Blog",
                 "nav-projects": "Projects",
+                "nav-contributions": "Contributions",
                 "nav-contact": "Contact",
                 "stat-blogs": "Blog Posts",
                 "stat-repos": "Repositories",
@@ -536,163 +418,194 @@
                 "contact-mal-desc": "My anime watchlist and reviews",
                 "contact-instagram-desc": "Daily posts and chat",
                 "contact-note-title": "Open source contributions",
-                "contact-note-text": "I'm happy to contribute to open source projects and collaborate. You can contact me via GitHub and contribute to my projects."
+                "contact-note-text": "I'm happy to contribute to open source projects and collaborate. You can contact me via GitHub and contribute to my projects.",
+                "contributions-intro-title": "Open Source Translation Contributions",
+                "contributions-intro-text": "I contribute to the open-source ecosystem through English → Turkish translations.",
+                "contribution-type-translation": "🌐 Turkish Translation"
             }
         };
 
+        // ─── Nix-like parser ───────────────────────────────────────────
+        function parseNixLike(text) {
+            const result = {};
+            // Yorumları temizle (# ile başlayan satırlar)
+            const cleaned = text.replace(/#[^\n]*/g, '');
+            // Her blok: Name = { ... };
+            const blockRegex = /(\w+)\s*=\s*\{([^}]+)\}/g;
+            const fieldRegex = /(\w+)\s*=\s*"([^"]*)";/g;
+
+            let block;
+            while ((block = blockRegex.exec(cleaned)) !== null) {
+                const name = block[1];
+                const body = block[2];
+                result[name] = { _name: name };
+
+                fieldRegex.lastIndex = 0;
+                let field;
+                while ((field = fieldRegex.exec(body)) !== null) {
+                    result[name][field[1]] = field[2];
+                }
+            }
+            return result;
+        }
+
+        // ─── Contributions loader ──────────────────────────────────────
+        async function loadContributions() {
+            if (contributionsLoading) return;
+            contributionsLoading = true;
+
+            const grid = document.getElementById('contributions-grid');
+            const loading = document.getElementById('contributions-loading');
+
+            grid.innerHTML = '';
+            loading.style.display = 'block';
+
+            try {
+                const ts = Math.floor(Date.now() / 1000 / 3600);
+                const url = `https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@${branch}/contributions.nix?t=${ts}`;
+                const res = await fetch(url);
+
+                if (!res.ok) throw new Error('Dosya bulunamadı');
+
+                const text = await res.text();
+                const data = parseNixLike(text);
+                const entries = Object.values(data);
+
+                loading.style.display = 'none';
+
+                if (entries.length === 0) {
+                    grid.innerHTML = `<p style="color:var(--text-dim); text-align:center; padding:2rem;">${translations[currentLang]['no-content']}</p>`;
+                    return;
+                }
+
+                entries.forEach(entry => {
+                    const card = document.createElement('a');
+                    card.className = 'contribution-card';
+                    card.href = entry.url || '#';
+                    card.target = '_blank';
+                    card.rel = 'noopener noreferrer';
+
+                    const desc = currentLang === 'en' ? (entry.desc_en || entry.desc) : (entry.desc || entry.desc_en);
+                    const typeBadge = translations[currentLang][`contribution-type-${entry.type}`] || entry.type || '';
+
+                    const iconHtml = entry.icon
+                        ? `<img class="contribution-icon"
+                               src="https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@${branch}/${entry.icon}"
+                               alt="${entry._name}"
+                               onerror="this.outerHTML='<div class=\\'contribution-icon-placeholder\\'><i class=\\'fas fa-puzzle-piece\\'></i></div>'">`
+                        : `<div class="contribution-icon-placeholder"><i class="fas fa-puzzle-piece"></i></div>`;
+
+                    card.innerHTML = `
+                        <div class="contribution-header">
+                            ${iconHtml}
+                            <span class="contribution-name">${entry._name}</span>
+                        </div>
+                        <p class="contribution-desc">${desc || ''}</p>
+                        ${typeBadge ? `<span class="contribution-badge">${typeBadge}</span>` : ''}
+                    `;
+                    grid.appendChild(card);
+                });
+
+            } catch (err) {
+                loading.innerHTML = `<p style="color:var(--red);">${translations[currentLang]['error']}: ${err.message}</p>`;
+            } finally {
+                contributionsLoading = false;
+            }
+        }
+
+        // ─── Translations ──────────────────────────────────────────────
         function applyTranslations(lang) {
             currentLang = lang;
             localStorage.setItem('preferredLanguage', lang);
-            
-            document.querySelectorAll('[data-i18n]').forEach(element => {
-                const key = element.getAttribute('data-i18n');
-                if (translations[lang][key]) {
-                    element.textContent = translations[lang][key];
-                }
-            });
 
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) el.textContent = translations[lang][key];
+            });
             document.getElementById('bio-text').textContent = translations[lang]['bio-text'];
 
             document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.dataset.lang === lang) {
-                    btn.classList.add('active');
-                }
+                btn.classList.toggle('active', btn.dataset.lang === lang);
             });
 
-            const projectsSection = document.getElementById('projects');
-            if (projectsSection.classList.contains('active')) {
+            // Aktif section'ları yenile
+            if (document.getElementById('projects').classList.contains('active')) {
                 document.getElementById('projects-list').innerHTML = '';
                 document.getElementById('projects-loading').style.display = 'block';
                 loadProjects();
             }
-            
-            const blogSection = document.getElementById('blog');
-            if (blogSection.classList.contains('active')) {
-                loadBlogContent();
-            }
+            if (document.getElementById('blog').classList.contains('active')) loadBlogContent();
+            if (document.getElementById('contributions').classList.contains('active')) loadContributions();
         }
 
         document.querySelectorAll('.lang-btn').forEach(btn => {
             btn.addEventListener('click', () => applyTranslations(btn.dataset.lang));
         });
 
+        // ─── Nav ───────────────────────────────────────────────────────
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-                
-                btn.classList.add('active');
-                document.getElementById(btn.dataset.page).classList.add('active');
+                showSection(btn.dataset.page);
+                window.location.hash = btn.dataset.page === 'home' ? '' : btn.dataset.page;
 
-                if (btn.dataset.page === 'blog') {
-                    window.location.hash = 'blog';
-                } else {
-                    window.location.hash = btn.dataset.page;
-                }
+                if (btn.dataset.page === 'contributions') loadContributions();
             });
         });
 
+        // ─── Profile ───────────────────────────────────────────────────
         async function loadProfile() {
             try {
                 document.getElementById("username").textContent = "Kehribar";
                 document.getElementById("avatar").src = `https://github.com/${githubUsername}.png?size=200`;
-
-                let allRepos = [];
-                try {
-                    const repos = await fetch(`https://api.github.com/users/${githubUsername}/repos?per_page=100`).then(r => r.json());
-                    allRepos = repos;
-                } catch (error) {
-                    console.log('Using cached repo stats');
-                    document.getElementById("repo-count").textContent = '~';
-                    document.getElementById("stars-count").textContent = '~';
-                    return;
-                }
-
-                const totalStars = allRepos.reduce((sum, repo) => sum + repo.stargazers_count, 0);
-
-                document.getElementById("repo-count").textContent = allRepos.length;
+                const repos = await fetch(`https://api.github.com/users/${githubUsername}/repos?per_page=100`).then(r => r.json());
+                if (!Array.isArray(repos)) throw new Error();
+                const totalStars = repos.reduce((sum, r) => sum + r.stargazers_count, 0);
+                document.getElementById("repo-count").textContent = repos.length;
                 document.getElementById("stars-count").textContent = totalStars;
-            } catch (error) {
-                console.error('Error loading profile:', error);
-                document.getElementById("username").textContent = "Kehribar";
-                document.getElementById("avatar").src = `https://github.com/${githubUsername}.png?size=200`;
+            } catch {
                 document.getElementById("repo-count").textContent = '~';
                 document.getElementById("stars-count").textContent = '~';
             }
         }
 
-        // blog-index.json dosyasından blog yapısını oku
+        // ─── Blog index ────────────────────────────────────────────────
         async function loadBlogIndex() {
             if (blogIndexData) return blogIndexData;
-            
             try {
-                const timestamp = Math.floor(Date.now() / 1000 / 3600);
-                const response = await fetch(`https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@main/blog-index.json?t=${timestamp}`);
-                blogIndexData = await response.json();
+                const ts = Math.floor(Date.now() / 1000 / 3600);
+                const res = await fetch(`https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@${branch}/blog-index.json?t=${ts}`);
+                blogIndexData = await res.json();
                 return blogIndexData;
-            } catch (error) {
-                console.error('Error loading blog index:', error);
-                return null;
-            }
+            } catch { return null; }
         }
 
         async function fetchDirectoryContents(path) {
             const index = await loadBlogIndex();
             if (!index) return { folders: [], files: [] };
-
             const langData = index[currentLang] || {};
-            
-            // Root path için
+
             if (!path || path === currentLang) {
-                const folders = new Set();
-                const rootFiles = [];
-
+                const folders = new Set(), rootFiles = [];
                 Object.keys(langData).forEach(key => {
-                    if (key === '_root') {
-                        rootFiles.push(...langData[key].files);
-                    } else {
-                        const topFolder = langData[key].path.split('/')[0];
-                        if (topFolder) folders.add(topFolder);
-                    }
+                    if (key === '_root') rootFiles.push(...langData[key].files);
+                    else { const top = langData[key].path.split('/')[0]; if (top) folders.add(top); }
                 });
-
-                return {
-                    folders: Array.from(folders).sort(),
-                    files: rootFiles.map(f => f.name).sort()
-                };
+                return { folders: Array.from(folders).sort(), files: rootFiles.map(f => f.name).sort() };
             }
 
-            // Alt klasörler için
-            const pathWithoutLang = path.replace(`${currentLang}/`, '').replace(currentLang, '');
-            const targetFolder = langData[pathWithoutLang];
+            const rel = path.replace(`${currentLang}/`, '').replace(currentLang, '');
+            const target = langData[rel];
+            if (target?.files) return { folders: [], files: target.files.map(f => f.name).sort() };
 
-            if (targetFolder && targetFolder.files) {
-                return {
-                    folders: [],
-                    files: targetFolder.files.map(f => f.name).sort()
-                };
-            }
-
-            // Alt klasörleri bul
             const folders = new Set();
-            const currentDepth = pathWithoutLang.split('/').filter(p => p).length;
-
             Object.keys(langData).forEach(key => {
-                if (key.startsWith(pathWithoutLang)) {
-                    const remainder = key.substring(pathWithoutLang.length).replace(/^\//, '');
-                    const parts = remainder.split('/').filter(p => p);
-                    
-                    if (parts.length > 0) {
-                        folders.add(parts[0]);
-                    }
+                if (key.startsWith(rel)) {
+                    const rem = key.substring(rel.length).replace(/^\//, '');
+                    const parts = rem.split('/').filter(p => p);
+                    if (parts.length > 0) folders.add(parts[0]);
                 }
             });
-
-            return {
-                folders: Array.from(folders).sort(),
-                files: []
-            };
+            return { folders: Array.from(folders).sort(), files: [] };
         }
 
         async function loadBlogContent() {
@@ -703,26 +616,22 @@
             blogList.innerHTML = '';
             blogLoading.style.display = 'block';
 
-            const langFolder = currentLang === 'tr' ? 'tr' : 'en';
-            
+            const langFolder = currentLang;
             breadcrumb.innerHTML = '<a onclick="navigateTo([])">blog</a>';
-            currentPath.forEach((folder, index) => {
-                const subPath = currentPath.slice(0, index + 1);
-                breadcrumb.innerHTML += ` / <a onclick="navigateTo(${JSON.stringify(subPath).replace(/"/g, '&quot;')})">${folder}</a>`;
+            currentPath.forEach((folder, i) => {
+                const sub = currentPath.slice(0, i + 1);
+                breadcrumb.innerHTML += ` / <a onclick="navigateTo(${JSON.stringify(sub).replace(/"/g, '&quot;')})">${folder}</a>`;
             });
 
             try {
                 const fullPath = currentPath.length > 0 ? `${langFolder}/${currentPath.join('/')}` : langFolder;
                 const contents = await fetchDirectoryContents(fullPath);
-
                 blogLoading.style.display = 'none';
 
-                if (contents.folders.length === 0 && contents.files.length === 0) {
-                    blogList.innerHTML = '<li style="padding: 1rem; color: var(--text-dim); text-align: center;">No blog posts yet</li>';
+                if (!contents.folders.length && !contents.files.length) {
+                    blogList.innerHTML = '<li style="padding:1rem;color:var(--text-dim);text-align:center;">No blog posts yet</li>';
                     return;
                 }
-
-                // Klasörleri göster
                 contents.folders.forEach(folder => {
                     const li = document.createElement('li');
                     li.className = 'folder-item';
@@ -730,163 +639,91 @@
                     li.onclick = () => navigateToFolder(folder);
                     blogList.appendChild(li);
                 });
-
-                // Dosyaları göster
                 contents.files.forEach(file => {
                     const li = document.createElement('li');
                     li.className = 'file-item';
                     li.innerHTML = `<i class="fas fa-file-alt"></i> ${file}`;
-                    
-                    const timestamp = Math.floor(Date.now() / 1000 / 3600);
-                    const filePath = currentPath.length > 0 ? 
-                        `blog/${langFolder}/${currentPath.join('/')}/${file}` : 
-                        `blog/${langFolder}/${file}`;
-                    const cdnFileUrl = `https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@main/${filePath}?t=${timestamp}`;
-                    li.onclick = () => openMarkdownFile(cdnFileUrl, file);
+                    const ts = Math.floor(Date.now() / 1000 / 3600);
+                    const filePath = currentPath.length > 0 ? `blog/${langFolder}/${currentPath.join('/')}/${file}` : `blog/${langFolder}/${file}`;
+                    li.onclick = () => openMarkdownFile(`https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@${branch}/${filePath}?t=${ts}`, file);
                     blogList.appendChild(li);
                 });
-
-                // Blog sayısını güncelle
                 await countAllMarkdownFiles();
-            } catch (error) {
-                console.error('Blog loading error:', error);
-                blogLoading.innerHTML = `<p style="color: var(--red);">${translations[currentLang]['error']}</p>`;
+            } catch (err) {
+                blogLoading.innerHTML = `<p style="color:var(--red);">${translations[currentLang]['error']}</p>`;
             }
         }
 
         async function countAllMarkdownFiles() {
             try {
                 const index = await loadBlogIndex();
-                if (!index) {
-                    document.getElementById("blog-count").textContent = '~';
-                    return 0;
-                }
-
-                const langData = index[currentLang] || {};
+                if (!index) { document.getElementById("blog-count").textContent = '~'; return; }
                 let count = 0;
-
-                Object.values(langData).forEach(folder => {
-                    if (folder.files && Array.isArray(folder.files)) {
-                        count += folder.files.length;
-                    }
-                });
-
+                Object.values(index[currentLang] || {}).forEach(folder => { if (folder.files) count += folder.files.length; });
                 document.getElementById("blog-count").textContent = count;
-                return count;
-            } catch {
-                document.getElementById("blog-count").textContent = '~';
-                return 0;
-            }
+            } catch { document.getElementById("blog-count").textContent = '~'; }
         }
 
         function navigateTo(path) {
             currentPath = path;
-            const langFolder = currentLang === 'tr' ? 'tr' : 'en';
-            const hashPath = path.length > 0 ? `blog/${langFolder}/${path.join('/')}` : `blog/${langFolder}`;
-            window.location.hash = hashPath;
+            window.location.hash = path.length > 0 ? `blog/${currentLang}/${path.join('/')}` : `blog/${currentLang}`;
             loadBlogContent();
         }
 
         function navigateToFolder(folderName) {
             currentPath.push(folderName);
-            const langFolder = currentLang === 'tr' ? 'tr' : 'en';
-            window.location.hash = `blog/${langFolder}/${currentPath.join('/')}`;
+            window.location.hash = `blog/${currentLang}/${currentPath.join('/')}`;
             loadBlogContent();
         }
 
         async function openMarkdownFile(url, filename) {
-            const langFolder = currentLang === 'tr' ? 'tr' : 'en';
-            const fullPath = currentPath.length > 0 ? `${langFolder}/${currentPath.join('/')}/${filename}` : `${langFolder}/${filename}`;
+            const fullPath = currentPath.length > 0 ? `${currentLang}/${currentPath.join('/')}/${filename}` : `${currentLang}/${filename}`;
             window.location.hash = `blog/${fullPath}`;
-            
             const modal = document.getElementById('blog-modal');
             const content = document.getElementById('modal-content');
-            
             modal.classList.add('active');
             isReadingBlog = true;
             content.innerHTML = `<div class="loading"><i class="fas fa-spinner fa-spin"></i> ${translations[currentLang]['loading']}</div>`;
-
             try {
-                const response = await fetch(url);
-                const markdown = await response.text();
-                const html = marked.parse(markdown);
-                
-                content.innerHTML = `<h1 style="color: var(--green); margin-bottom: 1rem;">${filename.replace('.md', '')}</h1>${html}`;
-            } catch (error) {
-                content.innerHTML = `<p style="color: var(--red);">${translations[currentLang]['error']}</p>`;
-            }
+                const res = await fetch(url);
+                const markdown = await res.text();
+                content.innerHTML = `<h1 style="color:var(--green);margin-bottom:1rem;">${filename.replace('.md','')}</h1>${marked.parse(markdown)}`;
+            } catch { content.innerHTML = `<p style="color:var(--red);">${translations[currentLang]['error']}</p>`; }
         }
 
         function closeModal() {
             document.getElementById('blog-modal').classList.remove('active');
             isReadingBlog = false;
-            const langFolder = currentLang === 'tr' ? 'tr' : 'en';
             const pathWithoutFile = currentPath.join('/');
-            window.location.hash = pathWithoutFile ? `blog/${langFolder}/${pathWithoutFile}` : `blog/${langFolder}`;
+            window.location.hash = pathWithoutFile ? `blog/${currentLang}/${pathWithoutFile}` : `blog/${currentLang}`;
         }
 
-        document.getElementById('blog-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'blog-modal') closeModal();
-        });
+        document.getElementById('blog-modal').addEventListener('click', e => { if (e.target.id === 'blog-modal') closeModal(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape' && isReadingBlog) closeModal(); });
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && isReadingBlog) closeModal();
-        });
-
+        // ─── Projects ──────────────────────────────────────────────────
         async function loadProjects() {
             const projectsList = document.getElementById('projects-list');
             const projectsLoading = document.getElementById('projects-loading');
-
             try {
                 const repos = await fetch(`https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=100`).then(r => r.json());
+                if (repos.message) { setTimeout(loadProjects, 5000); return; }
 
-                if (repos.message) {
-                    projectsLoading.innerHTML = `<p style="color: var(--yellow);">${translations[currentLang]['loading']}... (Rate limit - will retry in a moment)</p>`;
-                    setTimeout(loadProjects, 5000);
-                    return;
-                }
-
-                const allRepos = repos
-                    .filter(repo => !repo.fork)
-                    .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
-                    .slice(0, 12);
-
+                const all = repos.filter(r => !r.fork).sort((a,b) => new Date(b.updated_at)-new Date(a.updated_at)).slice(0,12);
                 projectsLoading.style.display = 'none';
 
-                const batchSize = 3;
-                for (let i = 0; i < allRepos.length; i += batchSize) {
-                    const batch = allRepos.slice(i, i + batchSize);
-                    
-                    await Promise.all(batch.map(async (repo) => {
+                for (let i = 0; i < all.length; i += 3) {
+                    await Promise.all(all.slice(i, i+3).map(async repo => {
                         let description = repo.description;
-                        
-                        // desc klasöründen açıklama çekmeye çalış (sadece diğer repolar için)
                         if (repo.name !== repoName) {
-                            const descFile = currentLang === 'tr' ? 'tr.md' : 'en.md';
-                            const descUrl = `https://cdn.jsdelivr.net/gh/${repo.full_name}@main/desc/${descFile}`;
-                            
                             try {
-                                const controller = new AbortController();
-                                const timeoutId = setTimeout(() => controller.abort(), 2000);
-                                
-                                const descResponse = await fetch(descUrl, { 
-                                    signal: controller.signal,
-                                    cache: 'force-cache'
-                                });
-                                clearTimeout(timeoutId);
-                                
-                                if (descResponse.ok) {
-                                    description = await descResponse.text();
-                                    description = description.replace(/[#*`\[\]]/g, '').trim();
-                                }
-                            } catch (e) {
-                                // Hata durumunda repo description kullanılacak
-                            }
+                                const ctrl = new AbortController();
+                                setTimeout(() => ctrl.abort(), 2000);
+                                const r = await fetch(`https://cdn.jsdelivr.net/gh/${repo.full_name}@main/desc/${currentLang === 'tr' ? 'tr' : 'en'}.md`, { signal: ctrl.signal, cache: 'force-cache' });
+                                if (r.ok) description = (await r.text()).replace(/[#*`\[\]]/g,'').trim();
+                            } catch {}
                         }
-
-                        if (!description) {
-                            description = translations[currentLang]['no-content'];
-                        }
+                        if (!description) description = translations[currentLang]['no-content'];
 
                         const card = document.createElement('div');
                         card.className = 'project-card';
@@ -898,101 +735,63 @@
                                 ${repo.language ? `<span><i class="fas fa-code"></i> ${repo.language}</span>` : ''}
                                 <span><i class="fas fa-star"></i> ${repo.stargazers_count}</span>
                                 <span><i class="fas fa-code-fork"></i> ${repo.forks_count}</span>
-                            </div>
-                        `;
+                            </div>`;
                         projectsList.appendChild(card);
                     }));
                 }
-            } catch (error) {
-                console.error('Error loading projects:', error);
-                projectsLoading.innerHTML = `<p style="color: var(--red);">${translations[currentLang]['error']}</p>`;
+            } catch { projectsLoading.innerHTML = `<p style="color:var(--red);">${translations[currentLang]['error']}</p>`; }
+        }
+
+        // ─── Routing ───────────────────────────────────────────────────
+        function showSection(name) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(name).classList.add('active');
+            document.querySelector(`[data-page="${name}"]`).classList.add('active');
+        }
+
+        function handleRouting() {
+            const hash = window.location.hash.slice(1);
+            if (!hash || hash === 'home') { showSection('home'); countAllMarkdownFiles(); }
+            else if (hash === 'projects') { showSection('projects'); }
+            else if (hash === 'contact') { showSection('contact'); }
+            else if (hash === 'contributions') { showSection('contributions'); loadContributions(); }
+            else if (hash.startsWith('blog')) {
+                showSection('blog');
+                const blogPath = hash.replace('blog/', '').replace('blog', '');
+                if (blogPath) {
+                    const parts = blogPath.split('/').filter(p => p);
+                    if (parts[0] === 'tr' || parts[0] === 'en') parts.shift();
+                    const last = parts[parts.length - 1];
+                    if (last?.endsWith('.md')) {
+                        currentPath = parts.slice(0,-1);
+                        loadBlogContent().then(() => {
+                            const ts = Math.floor(Date.now()/1000/3600);
+                            const folder = parts.slice(0,-1).join('/');
+                            const fp = folder ? `blog/${currentLang}/${folder}/${last}` : `blog/${currentLang}/${last}`;
+                            const modal = document.getElementById('blog-modal');
+                            const content = document.getElementById('modal-content');
+                            modal.classList.add('active');
+                            isReadingBlog = true;
+                            content.innerHTML = `<div class="loading"><i class="fas fa-spinner fa-spin"></i></div>`;
+                            fetch(`https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@${branch}/${fp}?t=${ts}`)
+                                .then(r => r.text())
+                                .then(md => { content.innerHTML = `<h1 style="color:var(--green);margin-bottom:1rem;">${last.replace('.md','')}</h1>${marked.parse(md)}`; })
+                                .catch(() => { content.innerHTML = `<p style="color:var(--red);">${translations[currentLang]['error']}</p>`; });
+                        });
+                    } else { currentPath = parts; loadBlogContent(); }
+                } else { currentPath = []; loadBlogContent(); }
             }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             applyTranslations(currentLang);
             loadProfile();
-            
-            const hash = window.location.hash.slice(1);
-            if (!hash || hash === 'home') {
-                countAllMarkdownFiles();
-            }
-            
             loadProjects();
-            
+            if (!window.location.hash || window.location.hash === '#home') countAllMarkdownFiles();
             handleRouting();
             window.addEventListener('hashchange', handleRouting);
         });
-
-        function handleRouting() {
-            const hash = window.location.hash.slice(1);
-            
-            if (!hash || hash === 'home') {
-                showSection('home');
-                countAllMarkdownFiles();
-            } else if (hash === 'projects') {
-                showSection('projects');
-            } else if (hash === 'contact') {
-                showSection('contact');
-            } else if (hash.startsWith('blog')) {
-                showSection('blog');
-                const blogPath = hash.replace('blog/', '').replace('blog', '');
-                
-                if (blogPath) {
-                    const parts = blogPath.split('/').filter(p => p);
-                    
-                    if (parts[0] === 'tr' || parts[0] === 'en') {
-                        parts.shift();
-                    }
-                    
-                    const lastPart = parts[parts.length - 1];
-                    
-                    if (lastPart && lastPart.endsWith('.md')) {
-                        currentPath = parts.slice(0, -1);
-                        loadBlogContent().then(() => {
-                            const filename = lastPart;
-                            const langFolder = currentLang === 'tr' ? 'tr' : 'en';
-                            const folderPath = parts.slice(0, -1).join('/');
-                            const filePath = folderPath ? 
-                                `blog/${langFolder}/${folderPath}/${filename}` : 
-                                `blog/${langFolder}/${filename}`;
-                            const timestamp = Math.floor(Date.now() / 1000 / 3600);
-                            const fileUrl = `https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@main/${filePath}?t=${timestamp}`;
-                            
-                            const modal = document.getElementById('blog-modal');
-                            const content = document.getElementById('modal-content');
-                            modal.classList.add('active');
-                            isReadingBlog = true;
-                            content.innerHTML = `<div class="loading"><i class="fas fa-spinner fa-spin"></i> ${translations[currentLang]['loading']}</div>`;
-
-                            fetch(fileUrl)
-                                .then(r => r.text())
-                                .then(markdown => {
-                                    const html = marked.parse(markdown);
-                                    content.innerHTML = `<h1 style="color: var(--green); margin-bottom: 1rem;">${filename.replace('.md', '')}</h1>${html}`;
-                                })
-                                .catch(() => {
-                                    content.innerHTML = `<p style="color: var(--red);">${translations[currentLang]['error']}</p>`;
-                                });
-                        });
-                    } else {
-                        currentPath = parts;
-                        loadBlogContent();
-                    }
-                } else {
-                    currentPath = [];
-                    loadBlogContent();
-                }
-            }
-        }
-
-        function showSection(sectionName) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            
-            document.getElementById(sectionName).classList.add('active');
-            document.querySelector(`[data-page="${sectionName}"]`).classList.add('active');
-        }
     </script>
 </body>
                 </html>
