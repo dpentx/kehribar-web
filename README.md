@@ -7,7 +7,5 @@ Selam. Buraya düzenli bakmıyorum ama repolarım ve [web sitem](https://kehriba
 Hayatım bir şarkı olsaydı, muhtemelen şu olurdu:
 
 <a href="https://music.youtube.com/watch?v=EzeJVk0gDZ4">
-  <img src="https://img.youtube.com/vi/EzeJVk0gDZ4/maxresdefault.jpg" width="360" alt="LOLUET — スプートニク"/>
+  <img src="https://kehribar.vercel.app/api/card" alt="LOLUET — スプートニク"/>
 </a>
-
-<sub>LOLUET — スプートニク</sub>

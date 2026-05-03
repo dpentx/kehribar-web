@@ -27,7 +27,7 @@ Kvaesitso = {
 
 Encore Tweaks = {
   url = "https://github.com/Rem01Gaming/encore";
-  icon = "icons/encore.png"
+  icon = "icons/encore.png";
   desc = "Oyun optimizasyonu için Magisk modülü";
   desc_en = "Magisk module for game optimizing";
   type = "translation";
