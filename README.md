@@ -1,3 +1,11 @@
-Selam! Profilimi daha anlaşılabilir ve genişletilebilir kıldığım bu zamanlarda gelişimime repolarım ve web sitem üzerinden tanık olabilirsiniz!
+Selam. Buraya düzenli bakmıyorum ama repolarım ve [web sitem](https://kehribar.vercel.app) üzerinden ne yaptığımı az çok takip edebilirsiniz.
 
-Çeşitli Foss yazılımların çevirisinde katkıda bulunmaktayım, belirli bir sayıyı geçtikten sonra Web siteme, destekte bulunduğum uygulamaların listesini ekleyeceğim. 🇹🇷
+Çeşitli açık kaynak yazılımların Türkçe çevirisine katkıda bulunuyorum. Belirli bir sayıyı geçince desteklediğim uygulamaların listesini web siteme ekleyeceğim.
+
+---
+
+Hayatım bir şarkı olsaydı, muhtemelen şu olurdu:
+
+<a href="https://music.youtube.com/watch?v=EzeJVk0gDZ4">
+  <img src="https://kehribar.vercel.app/api/card" alt="LOLUET — スプートニク"/>
+</a>
