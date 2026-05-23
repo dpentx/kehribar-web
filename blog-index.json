@@ -1,38 +1,16 @@
 {
   "tr": {
-    "blog": {
-      "_root": {
-        "files": [
-          {
-            "name": "deneme.md",
-            "size": 41,
-            "modified": "2026-05-23T14:16:49.963383Z"
-          }
-        ],
-        "path": ""
-      }
-    },
+    "blog": {},
     "nixzone": {
       "files": []
     }
   },
   "en": {
-    "blog": {
-      "_root": {
-        "files": [
-          {
-            "name": "test.md",
-            "size": 52,
-            "modified": "2026-05-23T14:16:49.963268Z"
-          }
-        ],
-        "path": ""
-      }
-    },
+    "blog": {},
     "nixzone": {
       "files": []
     }
   },
-  "generated_at": "2026-05-23T14:16:50.037036Z",
-  "cache_bust": 1779545810
+  "generated_at": "2026-05-23T14:23:44.014756Z",
+  "cache_bust": 1779546224
 }
