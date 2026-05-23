@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'blog/**'
+      - 'data/**'
   workflow_dispatch:
 
 jobs:
@@ -29,64 +29,61 @@ jobs:
 
           def generate_index():
               result = {
-                  "tr": {},
-                  "en": {},
+                  "tr": {"blog": {}, "nixzone": {"files": []}},
+                  "en": {"blog": {}, "nixzone": {"files": []}},
                   "generated_at": datetime.utcnow().isoformat() + "Z",
                   "cache_bust": int(datetime.utcnow().timestamp())
               }
-              
+
               for lang in ["tr", "en"]:
-                  blog_path = Path(f"blog/{lang}")
-                  
-                  if not blog_path.exists():
-                      continue
-                  
-                  # Tüm alt klasörleri ve dosyaları recursive olarak tara
-                  for md_file in blog_path.rglob("*.md"):
-                      # blog/tr/ veya blog/en/ dan sonraki relative path'i al
-                      relative_path = md_file.relative_to(blog_path)
-                      
-                      # Klasör yapısını koru
-                      folder_path = str(relative_path.parent)
-                      file_name = md_file.name
-                      
-                      # Root'taki dosyalar için "." kullan
-                      if folder_path == ".":
-                          folder_key = "_root"
-                      else:
-                          folder_key = folder_path
-                      
-                      # Klasör yoksa oluştur
-                      if folder_key not in result[lang]:
-                          result[lang][folder_key] = {
-                              "files": [],
-                              "path": folder_path if folder_path != "." else ""
-                          }
-                      
-                      # Dosya bilgilerini ekle
-                      file_info = {
-                          "name": file_name,
-                          "size": md_file.stat().st_size,
-                          "modified": datetime.fromtimestamp(md_file.stat().st_mtime).isoformat() + "Z"
-                      }
-                      
-                      result[lang][folder_key]["files"].append(file_info)
-              
+                  # Blog
+                  blog_path = Path(f"data/{lang}/blog")
+                  if blog_path.exists():
+                      for md_file in blog_path.rglob("*.md"):
+                          relative_path = md_file.relative_to(blog_path)
+                          folder_path = str(relative_path.parent)
+                          file_name = md_file.name
+                          folder_key = "_root" if folder_path == "." else folder_path
+                          if folder_key not in result[lang]["blog"]:
+                              result[lang]["blog"][folder_key] = {
+                                  "files": [],
+                                  "path": folder_path if folder_path != "." else ""
+                              }
+                          result[lang]["blog"][folder_key]["files"].append({
+                              "name": file_name,
+                              "size": md_file.stat().st_size,
+                              "modified": datetime.fromtimestamp(md_file.stat().st_mtime).isoformat() + "Z"
+                          })
+
+                  # NixZone
+                  nixzone_path = Path(f"data/{lang}/nixzone")
+                  if nixzone_path.exists():
+                      for md_file in nixzone_path.glob("*.md"):
+                          result[lang]["nixzone"]["files"].append({
+                              "name": md_file.name,
+                              "size": md_file.stat().st_size,
+                              "modified": datetime.fromtimestamp(md_file.stat().st_mtime).isoformat() + "Z"
+                          })
+
               # Dosyaları alfabetik sırala
               for lang in ["tr", "en"]:
-                  for folder_key in result[lang]:
-                      if isinstance(result[lang][folder_key], dict) and "files" in result[lang][folder_key]:
-                          result[lang][folder_key]["files"].sort(key=lambda x: x["name"])
-              
+                  for folder_key in result[lang]["blog"]:
+                      result[lang]["blog"][folder_key]["files"].sort(key=lambda x: x["name"])
+                  result[lang]["nixzone"]["files"].sort(key=lambda x: x["name"])
+
               return result
 
-          # JSON dosyasını oluştur
           index_data = generate_index()
           with open("blog-index.json", "w", encoding="utf-8") as f:
               json.dump(index_data, f, ensure_ascii=False, indent=2)
 
           print("Blog index generated successfully!")
-          print(f"Total folders indexed: TR={len(index_data['tr'])}, EN={len(index_data['en'])}")
+          blog_tr = len(index_data['tr']['blog'])
+          blog_en = len(index_data['en']['blog'])
+          nix_tr = len(index_data['tr']['nixzone']['files'])
+          nix_en = len(index_data['en']['nixzone']['files'])
+          print(f"Blog folders: TR={blog_tr}, EN={blog_en}")
+          print(f"NixZone files: TR={nix_tr}, EN={nix_en}")
           PYTHON_SCRIPT
           
       - name: Commit and push if changed
@@ -96,21 +93,16 @@ jobs:
           git add blog-index.json
           git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update blog index [skip ci]" && git push)
       
-      - name: Purge CDN cache (multiple attempts)
+      - name: Purge CDN cache
         run: |
-          # Blog index'i temizle
           for i in {1..3}; do
             echo "Attempt $i: Purging blog-index.json"
             curl -X POST "https://purge.jsdelivr.net/gh/${{ github.repository }}@main/blog-index.json"
             sleep 2
           done
-          
-          # Tüm blog klasörünü temizle
-          echo "Purging entire blog directory"
-          curl -X POST "https://purge.jsdelivr.net/gh/${{ github.repository }}@main/blog/"
-          
+
+          echo "Purging data directory"
+          curl -X POST "https://purge.jsdelivr.net/gh/${{ github.repository }}@main/data/"
           sleep 3
-          
-          # Özel olarak TR ve EN klasörlerini temizle
-          curl -X POST "https://purge.jsdelivr.net/gh/${{ github.repository }}@main/blog/tr/"
-          curl -X POST "https://purge.jsdelivr.net/gh/${{ github.repository }}@main/blog/en/"
+          curl -X POST "https://purge.jsdelivr.net/gh/${{ github.repository }}@main/data/tr/"
+          curl -X POST "https://purge.jsdelivr.net/gh/${{ github.repository }}@main/data/en/"
