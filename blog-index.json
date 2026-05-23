@@ -1,38 +1,27 @@
 {
   "tr": {
-    "testfolder": {
-      "files": [
-        {
-          "name": "Markdown-test yazısı.md",
-          "size": 253,
-          "modified": "2026-02-24T19:17:05.392833Z"
-        },
-        {
-          "name": "test-yazısı.md",
-          "size": 40,
-          "modified": "2026-02-24T19:17:05.392833Z"
-        },
-        {
-          "name": "test.md",
-          "size": 73,
-          "modified": "2026-02-24T19:17:05.392833Z"
-        }
-      ],
-      "path": "testfolder"
+    "blog": {
+      "_root": {
+        "files": [
+          {
+            "name": "deneme.md",
+            "size": 41,
+            "modified": "2026-05-23T14:14:38.990939Z"
+          }
+        ],
+        "path": ""
+      }
+    },
+    "nixzone": {
+      "files": []
     }
   },
   "en": {
-    "testfolder": {
-      "files": [
-        {
-          "name": "test.md",
-          "size": 51,
-          "modified": "2026-02-24T19:17:05.392833Z"
-        }
-      ],
-      "path": "testfolder"
+    "blog": {},
+    "nixzone": {
+      "files": []
     }
   },
-  "generated_at": "2026-02-24T19:17:05.459818Z",
-  "cache_bust": 1771960625
+  "generated_at": "2026-05-23T14:14:39.060878Z",
+  "cache_bust": 1779545679
 }
