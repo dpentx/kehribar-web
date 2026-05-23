@@ -473,12 +473,10 @@
             }
         };
 
-        // ─── Nix-like parser (boşluk ve tire içeren isimler desteklenir) ───
+        // ─── Nix-like parser ───────────────────────────────────────────
         function parseNixLike(text) {
             const result = {};
-            // Yorumları temizle
             const cleaned = text.replace(/#[^\n]*/g, '');
-            // İsim: bir veya daha fazla kelime (boşluk/tire içerebilir)
             const blockRegex = /([\w][\w\s-]*?)\s*=\s*\{([^}]+)\}/g;
             const fieldRegex = /(\w+)\s*=\s*"([^"]*)";/g;
 
@@ -568,10 +566,8 @@
                 const index = await loadBlogIndex();
                 loading.style.display = 'none';
 
-                const langData = index ? (index[currentLang] || {}) : {};
-                // blog/{lang}/nixos/ klasörünü ara
-                const nixFolder = langData['nixos'];
-                const files = nixFolder?.files || [];
+                const nixData = index ? (index[currentLang] || {}).nixzone || {} : {};
+                const files = nixData.files || [];
 
                 if (files.length === 0) {
                     list.innerHTML = `<div class="nix-empty"><i class="fas fa-snowflake"></i>${translations[currentLang]['nixzone-empty']}</div>`;
@@ -583,7 +579,7 @@
                     li.className = 'file-item';
                     li.innerHTML = `<i class="fas fa-file-alt" style="color:var(--purple)"></i> ${fileInfo.name.replace('.md', '')}`;
                     const ts = Math.floor(Date.now() / 1000 / 3600);
-                    const filePath = `blog/${currentLang}/nixos/${fileInfo.name}`;
+                    const filePath = `data/${currentLang}/nixzone/${fileInfo.name}`;
                     li.onclick = () => openMarkdownFileNix(
                         `https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@${branch}/${filePath}?t=${ts}`,
                         fileInfo.name
@@ -680,23 +676,23 @@
         async function fetchDirectoryContents(path) {
             const index = await loadBlogIndex();
             if (!index) return { folders: [], files: [] };
-            const langData = index[currentLang] || {};
+            const blogData = (index[currentLang] || {}).blog || {};
 
             if (!path || path === currentLang) {
                 const folders = new Set(), rootFiles = [];
-                Object.keys(langData).forEach(key => {
-                    if (key === '_root') rootFiles.push(...langData[key].files);
-                    else { const top = langData[key].path.split('/')[0]; if (top) folders.add(top); }
+                Object.keys(blogData).forEach(key => {
+                    if (key === '_root') rootFiles.push(...blogData[key].files);
+                    else { const top = blogData[key].path.split('/')[0]; if (top) folders.add(top); }
                 });
                 return { folders: Array.from(folders).sort(), files: rootFiles.map(f => f.name).sort() };
             }
 
             const rel = path.replace(`${currentLang}/`, '').replace(currentLang, '');
-            const target = langData[rel];
+            const target = blogData[rel];
             if (target?.files) return { folders: [], files: target.files.map(f => f.name).sort() };
 
             const folders = new Set();
-            Object.keys(langData).forEach(key => {
+            Object.keys(blogData).forEach(key => {
                 if (key.startsWith(rel)) {
                     const rem = key.substring(rel.length).replace(/^\//, '');
                     const parts = rem.split('/').filter(p => p);
@@ -742,8 +738,8 @@
                     li.innerHTML = `<i class="fas fa-file-alt"></i> ${file}`;
                     const ts = Math.floor(Date.now() / 1000 / 3600);
                     const filePath = currentPath.length > 0
-                        ? `blog/${currentLang}/${currentPath.join('/')}/${file}`
-                        : `blog/${currentLang}/${file}`;
+                        ? `data/${currentLang}/blog/${currentPath.join('/')}/${file}`
+                        : `data/${currentLang}/blog/${file}`;
                     li.onclick = () => openMarkdownFile(
                         `https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@${branch}/${filePath}?t=${ts}`,
                         file
@@ -761,7 +757,7 @@
                 const index = await loadBlogIndex();
                 if (!index) { document.getElementById("blog-count").textContent = '~'; return; }
                 let count = 0;
-                Object.values(index[currentLang] || {}).forEach(folder => { if (folder.files) count += folder.files.length; });
+                Object.values((index[currentLang] || {}).blog || {}).forEach(folder => { if (folder.files) count += folder.files.length; });
                 document.getElementById("blog-count").textContent = count;
             } catch { document.getElementById("blog-count").textContent = '~'; }
         }
@@ -792,7 +788,6 @@
             try {
                 const res = await fetch(url);
                 const markdown = await res.text();
-                // decodeURIComponent: URL'den gelen encode edilmiş Türkçe karakterleri düzelt
                 const displayName = decodeURIComponent(filename).replace('.md', '');
                 content.innerHTML = `<h1 style="color:var(--green);margin-bottom:1rem;">${displayName}</h1>${marked.parse(markdown)}`;
             } catch {
@@ -884,8 +879,8 @@
                             const ts = Math.floor(Date.now() / 1000 / 3600);
                             const folder = parts.slice(0, -1).join('/');
                             const fp = folder
-                                ? `blog/${currentLang}/${folder}/${last}`
-                                : `blog/${currentLang}/${last}`;
+                                ? `data/${currentLang}/blog/${folder}/${last}`
+                                : `data/${currentLang}/blog/${last}`;
                             const modal = document.getElementById('blog-modal');
                             const content = document.getElementById('modal-content');
                             modal.classList.add('active');
@@ -894,7 +889,6 @@
                             fetch(`https://cdn.jsdelivr.net/gh/${githubUsername}/${repoName}@${branch}/${fp}?t=${ts}`)
                                 .then(r => r.text())
                                 .then(md => {
-                                    // decodeURIComponent: hash'ten gelen encode edilmiş dosya adını düzelt
                                     const displayName = decodeURIComponent(last).replace('.md', '');
                                     content.innerHTML = `<h1 style="color:var(--green);margin-bottom:1rem;">${displayName}</h1>${marked.parse(md)}`;
                                 })
