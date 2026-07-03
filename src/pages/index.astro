@@ -1,0 +1,39 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { fetchGithubStats } from '../lib/github';
+import { getCollection } from 'astro:content';
+import { translations, type Lang } from '../lib/i18n';
+
+const lang = (Astro.url.searchParams.get('lang') as Lang) === 'en' ? 'en' : 'tr';
+const dict = translations[lang];
+
+const [stats, blogPosts] = await Promise.all([fetchGithubStats(), getCollection('blog')]);
+---
+
+<Layout title="Kehribar - I use NixOS BTW!" lang={lang} activePage="home" avatarUrl={stats.profile?.avatar_url}>
+    <section id="home" class="section active">
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value">{blogPosts.length}</div>
+                <div class="stat-label">{dict['stat-blogs']}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{stats.repoCount}</div>
+                <div class="stat-label">{dict['stat-repos']}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{stats.starCount}</div>
+                <div class="stat-label">{dict['stat-stars']}</div>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 2rem;">
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 0.5rem;">🌲 Visitor Counter 🌲</p>
+            <img
+                src="https://count.getloli.com/@dpentx?name=everforest&theme=rule34&padding=7&offset=0&align=top&scale=1&pixelated=1&darkmode=1"
+                alt="visitor count"
+                loading="lazy"
+                style="border-radius:8px;"
+            >
+        </div>
+    </section>
+</Layout>

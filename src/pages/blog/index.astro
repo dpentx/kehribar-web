@@ -1,0 +1,61 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import { translations, type Lang } from '../../lib/i18n';
+
+const lang = (Astro.url.searchParams.get('lang') as Lang) === 'en' ? 'en' : 'tr';
+const dict = translations[lang];
+
+const allPosts = await getCollection('blog');
+const posts = allPosts
+  .filter((p) => p.id.startsWith(`${lang}/`))
+  .map((p) => ({
+    slug: p.id.slice(lang.length + 1).replace(/\.md$/, ''),
+    title: p.data.title ?? p.id.split('/').pop()?.replace(/\.md$/, '') ?? p.id,
+    date: p.data.date,
+    description: p.data.description,
+  }))
+  .sort((a, b) => (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0));
+---
+
+<Layout title="Blog - Kehribar" lang={lang} activePage="blog">
+    <section id="blog" class="section active">
+        <div class="search-box" id="blog-search-box">
+            <i class="fas fa-magnifying-glass search-icon"></i>
+            <input type="text" id="blog-search" placeholder={lang === 'tr' ? 'Yazı ara...' : 'Search posts...'}>
+            <button class="search-clear" id="blog-search-clear" aria-label="clear"><i class="fas fa-xmark"></i></button>
+        </div>
+
+        {posts.length === 0 ? (
+            <p style="padding:1.5rem;color:var(--text-dim);text-align:center;background:var(--bg-light);border-radius:10px;border:1px dashed var(--border-soft);">
+                {dict['blog-empty']}
+            </p>
+        ) : (
+            <ul id="blog-list" class="file-list">
+                {posts.map((post) => (
+                    <li class="file-item" data-search={post.title.toLowerCase()}>
+                        <a href={`/blog/${lang}/${post.slug}`} style="color:inherit;text-decoration:none;display:flex;align-items:center;gap:0.6rem;width:100%;">
+                            <i class="fas fa-file-lines"></i> {post.title}
+                        </a>
+                    </li>
+                ))}
+            </ul>
+        )}
+    </section>
+
+    <script>
+        const input = document.getElementById('blog-search') as HTMLInputElement | null;
+        const clearBtn = document.getElementById('blog-search-clear');
+        const items = document.querySelectorAll('#blog-list .file-item');
+
+        function applyFilter() {
+            const q = (input?.value ?? '').trim().toLowerCase();
+            items.forEach((el) => {
+                const match = (el.getAttribute('data-search') ?? '').includes(q);
+                (el as HTMLElement).style.display = match ? '' : 'none';
+            });
+        }
+        input?.addEventListener('input', applyFilter);
+        clearBtn?.addEventListener('click', () => { if (input) input.value = ''; applyFilter(); });
+    </script>
+</Layout>

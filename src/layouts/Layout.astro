@@ -1,0 +1,151 @@
+---
+import '../styles/global.css';
+import { NAV_ITEMS, translations, type Lang } from '../lib/i18n';
+
+interface Props {
+  title?: string;
+  description?: string;
+  lang?: Lang;
+  activePage?: string;
+  avatarUrl?: string;
+}
+
+const {
+  title = 'Kehribar - I use NixOS BTW!',
+  description = 'Kehribar (dpentx) - NixOS, açık kaynak ve çeviri projeleri üzerine kişisel site.',
+  lang = 'tr',
+  activePage = 'home',
+  avatarUrl = 'https://github.com/dpentx.png?size=200',
+} = Astro.props;
+
+const dict = translations[lang];
+---
+
+<!DOCTYPE html>
+<html lang={lang}>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{title}</title>
+    <meta name="description" content={description}>
+    <link rel="icon" href="https://github.com/dpentx.png?size=64" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://avatars.githubusercontent.com" crossorigin>
+    <link rel="dns-prefetch" href="https://api.github.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- No Tailwind: the original CDN script wasn't actually used by any
+         markup here (zero utility classes in the whole site), so it was
+         pure dead weight. Dropped entirely instead of build-time-compiling
+         a framework that isn't used. -->
+</head>
+<body>
+    <div class="lang-switcher">
+        <button class="theme-btn" id="theme-toggle" title="True Black"><i class="fas fa-circle-half-stroke"></i></button>
+        <a class:list={["lang-btn", { active: lang === 'tr' }]} href="?lang=tr" data-lang-link="tr">🇹🇷 TR</a>
+        <a class:list={["lang-btn", { active: lang === 'en' }]} href="?lang=en" data-lang-link="en">🇬🇧 EN</a>
+    </div>
+
+    <div class="container">
+        <header>
+            <img id="avatar" class="avatar" src={avatarUrl} alt="Avatar" loading="eager" width="108" height="108">
+            <h1 id="username">Kehribar</h1>
+            <p class="bio" id="bio-text">{dict['bio-text']}</p>
+        </header>
+
+        <nav>
+            {NAV_ITEMS.map((item) => (
+                <a class:list={["nav-btn", { active: activePage === item.page }]} href={item.href}>
+                    <i class={`fas ${item.icon}`}></i> <span>{dict[item.key]}</span>
+                </a>
+            ))}
+        </nav>
+
+        <slot />
+    </div>
+
+    <!-- KAIDEN_BREAK EASTER EGG -->
+    <div id="kaiden-overlay" onclick="this.classList.remove('show')">
+        <svg class="kaiden-cat" width="260" height="220" viewBox="0 0 260 220" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="130" cy="190" rx="95" ry="14" fill="#000" opacity="0.25"/>
+            <path d="M70 80 Q40 30 60 35 Q85 40 90 70 Z" fill="#e69875"/>
+            <path d="M190 80 Q220 30 200 35 Q175 40 170 70 Z" fill="#e69875"/>
+            <path d="M78 78 Q58 45 70 48 Q86 52 88 70 Z" fill="#2d353b"/>
+            <path d="M182 78 Q202 45 190 48 Q174 52 172 70 Z" fill="#2d353b"/>
+            <ellipse cx="130" cy="130" rx="92" ry="78" fill="#e69875"/>
+            <ellipse cx="130" cy="150" rx="55" ry="45" fill="#f3d9bd"/>
+            <circle cx="98" cy="118" r="11" fill="#2d353b"/>
+            <circle cx="162" cy="118" r="11" fill="#2d353b"/>
+            <circle cx="101" cy="114" r="3" fill="#fff"/>
+            <circle cx="165" cy="114" r="3" fill="#fff"/>
+            <path d="M122 138 Q130 145 138 138 Q134 148 130 148 Q126 148 122 138Z" fill="#d699b6"/>
+            <path d="M130 146 Q120 158 105 154" stroke="#2d353b" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <path d="M130 146 Q140 158 155 154" stroke="#2d353b" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <line x1="70" y1="128" x2="40" y2="122" stroke="#2d353b" stroke-width="1.5"/>
+            <line x1="70" y1="136" x2="38" y2="136" stroke="#2d353b" stroke-width="1.5"/>
+            <line x1="190" y1="128" x2="220" y2="122" stroke="#2d353b" stroke-width="1.5"/>
+            <line x1="190" y1="136" x2="222" y2="136" stroke="#2d353b" stroke-width="1.5"/>
+            <ellipse cx="100" cy="195" rx="20" ry="13" fill="#e69875"/>
+            <ellipse cx="160" cy="195" rx="20" ry="13" fill="#e69875"/>
+            <path d="M205 150 Q250 140 245 95 Q243 75 225 80" stroke="#e69875" stroke-width="16" fill="none" stroke-linecap="round"/>
+        </svg>
+        <div class="kaiden-caption">🐾 Kaiden Break! Biraz mola ver 🐾</div>
+    </div>
+
+    <script>
+        // Theme toggle (True Black), persisted
+        const themeBtn = document.getElementById('theme-toggle');
+        const savedTheme = localStorage.getItem('trueBlack');
+        if (savedTheme === '1') document.body.classList.add('true-black');
+        themeBtn?.addEventListener('click', () => {
+            document.body.classList.toggle('true-black');
+            localStorage.setItem('trueBlack', document.body.classList.contains('true-black') ? '1' : '0');
+        });
+
+        // Language links: keep the same query-param navigation but also
+        // remember the choice so it's the default next visit.
+        document.querySelectorAll('[data-lang-link]').forEach((el) => {
+            el.addEventListener('click', (e) => {
+                const lang = el.getAttribute('data-lang-link');
+                if (lang) localStorage.setItem('preferredLanguage', lang);
+            });
+        });
+
+        // KAIDEN_BREAK EASTER EGG TRIGGER: avatara 5 kere hızlıca tıklayınca açılır
+        (function () {
+            const avatarEl = document.getElementById('avatar');
+            const overlayEl = document.getElementById('kaiden-overlay');
+            if (!avatarEl || !overlayEl) return;
+            let clickCount = 0;
+            let resetTimer: ReturnType<typeof setTimeout> | null = null;
+            (avatarEl as HTMLElement).style.cursor = 'pointer';
+            avatarEl.addEventListener('click', () => {
+                clickCount++;
+                if (resetTimer) clearTimeout(resetTimer);
+                resetTimer = setTimeout(() => { clickCount = 0; }, 1200);
+                if (clickCount >= 5) {
+                    clickCount = 0;
+                    overlayEl.classList.add('show');
+                }
+            });
+            let typed = '';
+            document.addEventListener('keydown', (e) => {
+                if (e.key.length !== 1) return;
+                typed = (typed + e.key.toLowerCase()).slice(-6);
+                if (typed === 'kaiden') overlayEl.classList.add('show');
+            });
+        })();
+
+        // Register the service worker for offline/repeat-visit caching of
+        // static assets (CSS is inlined per-page by Astro, this mainly
+        // helps fonts, icons and repeat navigations).
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(() => {});
+            });
+        }
+    </script>
+</body>
+</html>

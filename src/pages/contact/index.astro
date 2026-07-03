@@ -1,0 +1,32 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { translations, type Lang } from '../../lib/i18n';
+
+const lang = (Astro.url.searchParams.get('lang') as Lang) === 'en' ? 'en' : 'tr';
+const dict = translations[lang];
+---
+
+<Layout title="İletişim - Kehribar" lang={lang} activePage="contact">
+    <section id="contact" class="section active">
+        <div style="text-align:center;margin-bottom:1.5rem;">
+            <h2 style="color:var(--green);margin-bottom:0.5rem;">{dict['contact-title']}</h2>
+            <p style="color:var(--text-dim);font-size:0.9rem;">{dict['contact-subtitle']}</p>
+        </div>
+        <div class="contact-links">
+            <a href="https://github.com/dpentx" target="_blank" rel="noopener noreferrer" class="contact-link">
+                <i class="fab fa-github"></i>
+                <div class="contact-title">GitHub</div>
+                <div class="contact-desc">{dict['contact-github-desc']}</div>
+            </a>
+            <a href="https://myanimelist.net/profile/dpenx" target="_blank" rel="noopener noreferrer" class="contact-link">
+                <i class="fas fa-book"></i>
+                <div class="contact-title">MyAnimeList</div>
+                <div class="contact-desc">{dict['contact-mal-desc']}</div>
+            </a>
+        </div>
+        <div class="contact-note">
+            <p style="color: var(--text); margin-bottom: 0.5rem;"><i class="fas fa-handshake" style="color: var(--green);"></i> <strong>{dict['contact-note-title']}</strong></p>
+            <p style="color: var(--text-dim); font-size: 0.88rem;">{dict['contact-note-text']}</p>
+        </div>
+    </section>
+</Layout>

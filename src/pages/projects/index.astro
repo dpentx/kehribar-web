@@ -1,0 +1,45 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { fetchGithubStats } from '../../lib/github';
+import { translations, type Lang } from '../../lib/i18n';
+
+const lang = (Astro.url.searchParams.get('lang') as Lang) === 'en' ? 'en' : 'tr';
+const dict = translations[lang];
+
+const stats = await fetchGithubStats();
+const repos = stats.repos
+  .filter((r) => !r.fork)
+  .sort((a, b) => b.stargazers_count - a.stargazers_count);
+---
+
+<Layout title="Projeler - Kehribar" lang={lang} activePage="projects" avatarUrl={stats.profile?.avatar_url}>
+    <section id="projects" class="section active">
+        {repos.length === 0 ? (
+            <p style="padding:1.5rem;color:var(--text-dim);text-align:center;">{dict['no-content']}</p>
+        ) : (
+            <div id="projects-list" style="display:flex;flex-direction:column;gap:0.75rem;">
+                {repos.map((repo) => (
+                    <a
+                        href={repo.html_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="contribution-card"
+                        style="text-decoration:none;"
+                    >
+                        <div class="contribution-header">
+                            <i class="fas fa-code-branch" style="color:var(--green);font-size:1.1rem;"></i>
+                            <span class="contribution-name">{repo.name}</span>
+                            {repo.stargazers_count > 0 && (
+                                <span style="margin-left:auto;color:var(--yellow);font-size:0.85rem;">
+                                    <i class="fas fa-star"></i> {repo.stargazers_count}
+                                </span>
+                            )}
+                        </div>
+                        {repo.description && <p class="contribution-desc">{repo.description}</p>}
+                        {repo.language && <span class="contribution-badge">{repo.language}</span>}
+                    </a>
+                ))}
+            </div>
+        )}
+    </section>
+</Layout>
