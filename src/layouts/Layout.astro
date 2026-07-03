@@ -113,28 +113,15 @@ const dict = translations[lang];
             });
         });
 
-        // KAIDEN_BREAK EASTER EGG TRIGGER: avatara 5 kere hızlıca tıklayınca açılır
+        // KAIDEN_BREAK EASTER EGG TRIGGER: klavyeden "kaiden break" yazınca açılır
         (function () {
-            const avatarEl = document.getElementById('avatar');
             const overlayEl = document.getElementById('kaiden-overlay');
-            if (!avatarEl || !overlayEl) return;
-            let clickCount = 0;
-            let resetTimer: ReturnType<typeof setTimeout> | null = null;
-            (avatarEl as HTMLElement).style.cursor = 'pointer';
-            avatarEl.addEventListener('click', () => {
-                clickCount++;
-                if (resetTimer) clearTimeout(resetTimer);
-                resetTimer = setTimeout(() => { clickCount = 0; }, 1200);
-                if (clickCount >= 5) {
-                    clickCount = 0;
-                    overlayEl.classList.add('show');
-                }
-            });
+            if (!overlayEl) return;
             let typed = '';
             document.addEventListener('keydown', (e) => {
                 if (e.key.length !== 1) return;
-                typed = (typed + e.key.toLowerCase()).slice(-6);
-                if (typed === 'kaiden') overlayEl.classList.add('show');
+                typed = (typed + e.key.toLowerCase()).slice(-'kaiden break'.length);
+                if (typed === 'kaiden break') overlayEl.classList.add('show');
             });
         })();
 
