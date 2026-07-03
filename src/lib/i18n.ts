@@ -81,3 +81,13 @@ export const NAV_ITEMS: Array<{ page: string; icon: string; key: TranslationKey;
   { page: 'contributions', icon: 'fa-language', key: 'nav-contributions', href: '/contributions' },
   { page: 'contact', icon: 'fa-envelope', key: 'nav-contact', href: '/contact' },
 ];
+
+// Static-site-safe i18n routing: language lives in the URL path (/en/...),
+// never in a query string. Static HTML has no per-request server to read
+// ?lang= at visit time, so a query param can never actually change what a
+// visitor sees on a purely static host — this is the fix for that.
+export function langPath(lang: Lang, path: string): string {
+  if (lang !== 'en') return path;
+  return path === '/' ? '/en' : `/en${path}`;
+}
+

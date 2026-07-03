@@ -1,12 +1,12 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import { translations } from '../../lib/i18n';
+import Layout from '../../../layouts/Layout.astro';
+import { translations } from '../../../lib/i18n';
 
-const lang = 'tr' as const;
+const lang = 'en' as const;
 const dict = translations[lang];
 ---
 
-<Layout title="İletişim - Kehribar" lang={lang} activePage="contact">
+<Layout title="Contact - Kehribar" lang={lang} activePage="contact">
     <section id="contact" class="section active">
         <div style="text-align:center;margin-bottom:1.5rem;">
             <h2 style="color:var(--green);margin-bottom:0.5rem;">{dict['contact-title']}</h2>

@@ -440,4 +440,6 @@
             nav { gap: 0.2rem; }
             .nav-btn { padding: 0.5rem 0.7rem; font-size: 0.78rem; }
             .nav-btn span { display: none; }
+            .nav-btn i { display: inline; }
+            .nav-btn.active span { display: inline; }
         }

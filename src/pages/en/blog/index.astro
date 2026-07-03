@@ -1,9 +1,9 @@
 ---
-import Layout from '../../layouts/Layout.astro';
+import Layout from '../../../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
-import { translations, langPath } from '../../lib/i18n';
+import { translations, langPath } from '../../../lib/i18n';
 
-const lang = 'tr' as const;
+const lang = 'en' as const;
 const dict = translations[lang];
 
 const allPosts = await getCollection('blog');

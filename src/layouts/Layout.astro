@@ -1,14 +1,13 @@
 ---
 import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
-import { NAV_ITEMS, translations, type Lang } from '../lib/i18n';
+import { NAV_ITEMS, translations, langPath, type Lang } from '../lib/i18n';
 
 interface Props {
   title?: string;
   description?: string;
   lang?: Lang;
   activePage?: string;
-  avatarUrl?: string;
 }
 
 const {
@@ -16,10 +15,19 @@ const {
   description = 'Kehribar (dpentx) - NixOS, açık kaynak ve çeviri projeleri üzerine kişisel site.',
   lang = 'tr',
   activePage = 'home',
-  avatarUrl = 'https://github.com/dpentx.png?size=200',
 } = Astro.props;
 
+const avatarUrl = 'https://github.com/dpentx.png?size=200'; // stable, doesn't depend on any build-time API call succeeding
+
 const dict = translations[lang];
+
+// The lang switcher jumps to the equivalent page (by activePage) in the
+// other language — e.g. from /contact it goes to /en/contact, from an
+// individual blog post it falls back to the blog listing in that language
+// since a 1:1 translated post isn't guaranteed to exist.
+const currentNavItem = NAV_ITEMS.find((i) => i.page === activePage) ?? NAV_ITEMS[0];
+const trHref = langPath('tr', currentNavItem.href);
+const enHref = langPath('en', currentNavItem.href);
 ---
 
 <!DOCTYPE html>
@@ -46,8 +54,8 @@ const dict = translations[lang];
 <body>
     <div class="lang-switcher">
         <button class="theme-btn" id="theme-toggle" title="True Black"><i class="fas fa-circle-half-stroke"></i></button>
-        <a class:list={["lang-btn", { active: lang === 'tr' }]} href="?lang=tr" data-lang-link="tr">🇹🇷 TR</a>
-        <a class:list={["lang-btn", { active: lang === 'en' }]} href="?lang=en" data-lang-link="en">🇬🇧 EN</a>
+        <a class:list={["lang-btn", { active: lang === 'tr' }]} href={trHref} data-lang-link="tr">🇹🇷 TR</a>
+        <a class:list={["lang-btn", { active: lang === 'en' }]} href={enHref} data-lang-link="en">🇬🇧 EN</a>
     </div>
 
     <div class="container">
@@ -59,7 +67,7 @@ const dict = translations[lang];
 
         <nav>
             {NAV_ITEMS.map((item) => (
-                <a class:list={["nav-btn", { active: activePage === item.page }]} href={item.href}>
+                <a class:list={["nav-btn", { active: activePage === item.page }]} href={langPath(lang, item.href)}>
                     <i class={`fas ${item.icon}`}></i> <span>{dict[item.key]}</span>
                 </a>
             ))}

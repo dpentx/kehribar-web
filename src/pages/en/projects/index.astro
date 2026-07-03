@@ -1,9 +1,9 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import { fetchGithubStats } from '../../lib/github';
-import { translations } from '../../lib/i18n';
+import Layout from '../../../layouts/Layout.astro';
+import { fetchGithubStats } from '../../../lib/github';
+import { translations } from '../../../lib/i18n';
 
-const lang = 'tr' as const;
+const lang = 'en' as const;
 const dict = translations[lang];
 
 const stats = await fetchGithubStats();
@@ -12,7 +12,7 @@ const repos = stats.repos
   .sort((a, b) => b.stargazers_count - a.stargazers_count);
 ---
 
-<Layout title="Projeler - Kehribar" lang={lang} activePage="projects">
+<Layout title="Projects - Kehribar" lang={lang} activePage="projects">
     <section id="projects" class="section active">
         {repos.length === 0 ? (
             <p style="padding:1.5rem;color:var(--text-dim);text-align:center;">{dict['no-content']}</p>

@@ -1,10 +1,10 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import { fetchGithubStats } from '../lib/github';
+import Layout from '../../layouts/Layout.astro';
+import { fetchGithubStats } from '../../lib/github';
 import { getCollection } from 'astro:content';
-import { translations } from '../lib/i18n';
+import { translations } from '../../lib/i18n';
 
-const lang = 'tr' as const;
+const lang = 'en' as const;
 const dict = translations[lang];
 
 const [stats, blogPosts] = await Promise.all([fetchGithubStats(), getCollection('blog')]);
