@@ -54,18 +54,21 @@ const posts = allPosts
     </section>
 
     <script>
-        const input = document.getElementById('nix-search') as HTMLInputElement | null;
-        const clearBtn = document.getElementById('nix-search-clear');
-        const items = document.querySelectorAll('#nixzone-list .file-item');
+        document.addEventListener('astro:page-load', () => {
+            const input = document.getElementById('nix-search') as HTMLInputElement | null;
+            const clearBtn = document.getElementById('nix-search-clear');
+            const items = document.querySelectorAll('#nixzone-list .file-item');
+            if (!input) return;
 
-        function applyFilter() {
-            const q = (input?.value ?? '').trim().toLowerCase();
-            items.forEach((el) => {
-                const match = (el.getAttribute('data-search') ?? '').includes(q);
-                (el as HTMLElement).style.display = match ? '' : 'none';
-            });
-        }
-        input?.addEventListener('input', applyFilter);
-        clearBtn?.addEventListener('click', () => { if (input) input.value = ''; applyFilter(); });
+            function applyFilter() {
+                const q = (input?.value ?? '').trim().toLowerCase();
+                items.forEach((el) => {
+                    const match = (el.getAttribute('data-search') ?? '').includes(q);
+                    (el as HTMLElement).style.display = match ? '' : 'none';
+                });
+            }
+            input.addEventListener('input', applyFilter);
+            clearBtn?.addEventListener('click', () => { input.value = ''; applyFilter(); });
+        });
     </script>
 </Layout>

@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 import { NAV_ITEMS, translations, type Lang } from '../lib/i18n';
 
 interface Props {
@@ -36,6 +37,7 @@ const dict = translations[lang];
     <link rel="dns-prefetch" href="https://api.github.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <ClientRouter />
     <!-- No Tailwind: the original CDN script wasn't actually used by any
          markup here (zero utility classes in the whole site), so it was
          pure dead weight. Dropped entirely instead of build-time-compiling
@@ -95,33 +97,44 @@ const dict = translations[lang];
     </div>
 
     <script>
-        // Theme toggle (True Black), persisted
-        const themeBtn = document.getElementById('theme-toggle');
-        const savedTheme = localStorage.getItem('trueBlack');
-        if (savedTheme === '1') document.body.classList.add('true-black');
-        themeBtn?.addEventListener('click', () => {
-            document.body.classList.toggle('true-black');
-            localStorage.setItem('trueBlack', document.body.classList.contains('true-black') ? '1' : '0');
-        });
-
-        // Language links: keep the same query-param navigation but also
-        // remember the choice so it's the default next visit.
-        document.querySelectorAll('[data-lang-link]').forEach((el) => {
-            el.addEventListener('click', (e) => {
-                const lang = el.getAttribute('data-lang-link');
-                if (lang) localStorage.setItem('preferredLanguage', lang);
-            });
-        });
-
-        // KAIDEN_BREAK EASTER EGG TRIGGER: klavyeden "kaiden break" yazınca açılır
+        // Event delegation attached once on `document` — safe across every
+        // View Transitions soft navigation regardless of whether Astro
+        // reuses or replaces the underlying header/nav DOM nodes.
         (function () {
-            const overlayEl = document.getElementById('kaiden-overlay');
-            if (!overlayEl) return;
+            const savedTheme = localStorage.getItem('trueBlack');
+            if (savedTheme === '1') document.body.classList.add('true-black');
+
+            document.addEventListener('click', (e) => {
+                const target = e.target as HTMLElement;
+                const themeBtn = target.closest('#theme-toggle');
+                if (themeBtn) {
+                    document.body.classList.toggle('true-black');
+                    localStorage.setItem('trueBlack', document.body.classList.contains('true-black') ? '1' : '0');
+                    return;
+                }
+                const langLink = target.closest('[data-lang-link]');
+                if (langLink) {
+                    const lang = langLink.getAttribute('data-lang-link');
+                    if (lang) localStorage.setItem('preferredLanguage', lang);
+                }
+            });
+
+            // Re-apply the True Black class after each soft navigation swap
+            // (astro:before-swap runs before the new body replaces the old one).
+            document.addEventListener('astro:after-swap', () => {
+                if (localStorage.getItem('trueBlack') === '1') document.body.classList.add('true-black');
+            });
+        })();
+
+        // KAIDEN_BREAK EASTER EGG TRIGGER: klavyeden "kaiden break" yazınca açılır.
+        (function () {
             let typed = '';
             document.addEventListener('keydown', (e) => {
                 if (e.key.length !== 1) return;
                 typed = (typed + e.key.toLowerCase()).slice(-'kaiden break'.length);
-                if (typed === 'kaiden break') overlayEl.classList.add('show');
+                if (typed === 'kaiden break') {
+                    document.getElementById('kaiden-overlay')?.classList.add('show');
+                }
             });
         })();
 
@@ -134,5 +147,7 @@ const dict = translations[lang];
             });
         }
     </script>
+
+
 </body>
 </html>
