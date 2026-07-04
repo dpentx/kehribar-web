@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import Icon from '../../components/Icon.astro';
 import { getCollection } from 'astro:content';
 import { translations, langPath } from '../../lib/i18n';
 
@@ -21,9 +22,9 @@ const posts = allPosts
 <Layout title="Blog - Kehribar" lang={lang} activePage="blog">
     <section id="blog" class="section active">
         <div class="search-box" id="blog-search-box">
-            <i class="fas fa-magnifying-glass search-icon"></i>
+            <Icon name="magnifying-glass" class="icon search-icon" />
             <input type="text" id="blog-search" placeholder={lang === 'tr' ? 'Yazı ara...' : 'Search posts...'}>
-            <button class="search-clear" id="blog-search-clear" aria-label="clear"><i class="fas fa-xmark"></i></button>
+            <button class="search-clear" id="blog-search-clear" aria-label="clear"><Icon name="xmark" class="icon" /></button>
         </div>
 
         {posts.length === 0 ? (
@@ -35,7 +36,7 @@ const posts = allPosts
                 {posts.map((post) => (
                     <li class="file-item" data-search={post.title.toLowerCase()}>
                         <a href={langPath(lang, `/blog/${post.slug}`)} style="color:inherit;text-decoration:none;display:flex;align-items:center;gap:0.6rem;width:100%;">
-                            <i class="fas fa-file-lines"></i> {post.title}
+                            <Icon name="file-lines" class="icon" /> {post.title}
                         </a>
                     </li>
                 ))}

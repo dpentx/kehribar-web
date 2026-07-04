@@ -8,6 +8,14 @@
     }
 }
 
+.icon {
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    vertical-align: -0.125em;
+    flex-shrink: 0;
+}
+
 :root {
             /* Nord palette (https://www.nordtheme.com) */
             --bg: #2e3440;
@@ -15,7 +23,7 @@
             --bg-light: #3b4252;
             --bg-elevated: #434c5e;
             --text: #e5e9f0;
-            --text-dim: #7b88a1;
+            --text-dim: #9aa5bd;
             --green: #88c0d0;   /* single bold accent (Frost) — kept var name for drop-in compat */
             --blue: #81a1c1;
             --red: #bf616a;
@@ -98,8 +106,8 @@
         }
         .nav-btn:hover { color: var(--text); background: rgba(255,255,255,0.04); }
         .nav-btn.active { color: var(--bg-dark); background: var(--green); font-weight: 600; box-shadow: 0 2px 8px rgba(136,192,208,0.35); }
-        .nav-btn i { display: none; }
-        .nav-btn.active i { display: inline; }
+        .nav-btn .icon { display: none; }
+        .nav-btn.active .icon { display: inline-block; }
 
         .section { display: none; }
         .section.active { display: block; animation: fadeIn 0.35s ease; }
@@ -262,7 +270,7 @@
             font-size: 0.88rem;
             border: 1px dashed var(--border-soft);
         }
-        .nix-empty i { font-size: 1.8rem; display: block; margin-bottom: 0.75rem; color: var(--text-dim); opacity: 0.5; }
+        .nix-empty .icon { font-size: 1.8rem; width: 1.8rem; height: 1.8rem; display: block; margin: 0 auto 0.75rem; color: var(--text-dim); opacity: 0.5; }
 
         /* === CONTACT === */
         .contact-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem; margin-top: 2rem; }
@@ -273,7 +281,7 @@
             text-align: center; gap: 0.6rem; border: 1px solid var(--border-soft);
         }
         .contact-link:hover { background: var(--bg-elevated); border-color: var(--green); transform: translateY(-4px); box-shadow: var(--shadow); }
-        .contact-link i { font-size: 2.2rem; color: var(--green); }
+        .contact-link .icon { width: 2.2rem; height: 2.2rem; color: var(--green); }
         .contact-link .contact-title { font-weight: 700; font-size: 1.05rem; }
         .contact-link .contact-desc { color: var(--text-dim); font-size: 0.82rem; }
 
@@ -440,6 +448,6 @@
             nav { gap: 0.2rem; }
             .nav-btn { padding: 0.5rem 0.7rem; font-size: 0.78rem; }
             .nav-btn span { display: none; }
-            .nav-btn i { display: inline; }
+            .nav-btn .icon { display: inline-block; }
             .nav-btn.active span { display: inline; }
         }

@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
+import Icon from '../../../components/Icon.astro';
 import { getCollection, render } from 'astro:content';
 import { translations, langPath } from '../../../lib/i18n';
 
@@ -22,7 +23,7 @@ const title = post.data.title ?? post.id.split('/').pop()?.replace(/\.md$/, '') 
 <Layout title={`${title} - NixZONE - Kehribar`} description={post.data.description} lang={lang} activePage="nixzone">
     <section class="section active">
         <a href={langPath(lang, '/nixzone')} style="color:var(--green);text-decoration:none;display:inline-flex;align-items:center;gap:0.4rem;margin-bottom:1rem;">
-            <i class="fas fa-arrow-left"></i> {dict['back']}
+            <Icon name="arrow-left" class="icon" /> {dict['back']}
         </a>
         <div class="markdown-content">
             <h1 style="color:var(--green);margin-bottom:1rem;">{title}</h1>

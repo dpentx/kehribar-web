@@ -74,12 +74,12 @@ export function t(lang: Lang, key: TranslationKey): string {
 }
 
 export const NAV_ITEMS: Array<{ page: string; icon: string; key: TranslationKey; href: string }> = [
-  { page: 'home', icon: 'fa-house', key: 'nav-home', href: '/' },
-  { page: 'blog', icon: 'fa-folder', key: 'nav-blog', href: '/blog' },
-  { page: 'nixzone', icon: 'fa-snowflake', key: 'nav-nixzone', href: '/nixzone' },
-  { page: 'projects', icon: 'fa-code', key: 'nav-projects', href: '/projects' },
-  { page: 'contributions', icon: 'fa-language', key: 'nav-contributions', href: '/contributions' },
-  { page: 'contact', icon: 'fa-envelope', key: 'nav-contact', href: '/contact' },
+  { page: 'home', icon: 'house', key: 'nav-home', href: '/' },
+  { page: 'blog', icon: 'folder', key: 'nav-blog', href: '/blog' },
+  { page: 'nixzone', icon: 'snowflake', key: 'nav-nixzone', href: '/nixzone' },
+  { page: 'projects', icon: 'code', key: 'nav-projects', href: '/projects' },
+  { page: 'contributions', icon: 'language', key: 'nav-contributions', href: '/contributions' },
+  { page: 'contact', icon: 'envelope', key: 'nav-contact', href: '/contact' },
 ];
 
 // Static-site-safe i18n routing: language lives in the URL path (/en/...),

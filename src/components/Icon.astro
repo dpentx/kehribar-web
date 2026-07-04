@@ -1,0 +1,27 @@
+---
+// Inline SVG icons instead of loading the entire Font Awesome CDN stylesheet
+// (~80KB+ of mostly-unused CSS/webfont) just to show ~16 icons. This removes
+// a render-blocking external stylesheet and the associated "unused CSS"
+// Lighthouse finding entirely — the SVG paths are baked into the HTML at
+// build time, official Font Awesome Free path data (MIT/CC-BY licensed).
+import iconData from '../lib/icon-data.json';
+
+interface Props {
+  name: keyof typeof iconData;
+  class?: string;
+  style?: string;
+}
+
+const { name, class: className, style } = Astro.props;
+const icon = iconData[name];
+---
+
+<svg
+  class={className}
+  style={style}
+  viewBox={icon.viewBox}
+  fill="currentColor"
+  xmlns="http://www.w3.org/2000/svg"
+  aria-hidden="true"
+  focusable="false"
+><path d={icon.path}></path></svg>

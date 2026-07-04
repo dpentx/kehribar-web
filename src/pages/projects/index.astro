@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import Icon from '../../components/Icon.astro';
 import { fetchGithubStats } from '../../lib/github';
 import { translations } from '../../lib/i18n';
 
@@ -27,11 +28,11 @@ const repos = stats.repos
                         style="text-decoration:none;"
                     >
                         <div class="contribution-header">
-                            <i class="fas fa-code-branch" style="color:var(--green);font-size:1.1rem;"></i>
+                            <Icon name="code-branch" class="icon" style="color:var(--green);font-size:1.1rem;" />
                             <span class="contribution-name">{repo.name}</span>
                             {repo.stargazers_count > 0 && (
                                 <span style="margin-left:auto;color:var(--yellow);font-size:0.85rem;">
-                                    <i class="fas fa-star"></i> {repo.stargazers_count}
+                                    <Icon name="star" class="icon" /> {repo.stargazers_count}
                                 </span>
                             )}
                         </div>

@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import Icon from '../../components/Icon.astro';
 import { translations } from '../../lib/i18n';
 
 const lang = 'tr' as const;
@@ -14,18 +15,18 @@ const dict = translations[lang];
         </div>
         <div class="contact-links">
             <a href="https://github.com/dpentx" target="_blank" rel="noopener noreferrer" class="contact-link">
-                <i class="fab fa-github"></i>
+                <Icon name="github" class="icon" />
                 <div class="contact-title">GitHub</div>
                 <div class="contact-desc">{dict['contact-github-desc']}</div>
             </a>
             <a href="https://myanimelist.net/profile/dpenx" target="_blank" rel="noopener noreferrer" class="contact-link">
-                <i class="fas fa-book"></i>
+                <Icon name="book" class="icon" />
                 <div class="contact-title">MyAnimeList</div>
                 <div class="contact-desc">{dict['contact-mal-desc']}</div>
             </a>
         </div>
         <div class="contact-note">
-            <p style="color: var(--text); margin-bottom: 0.5rem;"><i class="fas fa-handshake" style="color: var(--green);"></i> <strong>{dict['contact-note-title']}</strong></p>
+            <p style="color: var(--text); margin-bottom: 0.5rem;"><Icon name="handshake" class="icon" style="color: var(--green);" /> <strong>{dict['contact-note-title']}</strong></p>
             <p style="color: var(--text-dim); font-size: 0.88rem;">{dict['contact-note-text']}</p>
         </div>
     </section>

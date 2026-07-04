@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
+import Icon from '../components/Icon.astro';
 import { NAV_ITEMS, translations, langPath, type Lang } from '../lib/i18n';
 
 interface Props {
@@ -40,20 +41,35 @@ const enHref = langPath('en', currentNavItem.href);
     <link rel="icon" href="https://github.com/dpentx.png?size=64" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="preconnect" href="https://avatars.githubusercontent.com" crossorigin>
     <link rel="dns-prefetch" href="https://api.github.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Fonts load async (preload + swap-on-load) instead of as a
+         render-blocking <link rel="stylesheet">, so the page can paint with
+         the fallback font immediately; text re-flows once the webfont
+         arrives (already using font-display=swap). -->
+    <link
+        rel="preload"
+        as="style"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        onload="this.onload=null;this.rel='stylesheet'"
+    >
+    <noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+    </noscript>
     <ClientRouter />
     <!-- No Tailwind: the original CDN script wasn't actually used by any
          markup here (zero utility classes in the whole site), so it was
          pure dead weight. Dropped entirely instead of build-time-compiling
-         a framework that isn't used. -->
+         a framework that isn't used.
+         No Font Awesome CDN either: icons are inlined as SVG at build time
+         (see src/components/Icon.astro) instead of loading an entire
+         render-blocking icon-font stylesheet for ~16 icons. -->
 </head>
 <body>
     <div class="lang-switcher">
-        <button class="theme-btn" id="theme-toggle" title="True Black"><i class="fas fa-circle-half-stroke"></i></button>
+        <button class="theme-btn" id="theme-toggle" title="True Black" aria-label="True Black tema aç/kapat">
+            <Icon name="circle-half-stroke" class="icon" />
+        </button>
         <a class:list={["lang-btn", { active: lang === 'tr' }]} href={trHref} data-lang-link="tr">🇹🇷 TR</a>
         <a class:list={["lang-btn", { active: lang === 'en' }]} href={enHref} data-lang-link="en">🇬🇧 EN</a>
     </div>
@@ -65,15 +81,21 @@ const enHref = langPath('en', currentNavItem.href);
             <p class="bio" id="bio-text">{dict['bio-text']}</p>
         </header>
 
-        <nav>
+        <nav aria-label="Ana navigasyon">
             {NAV_ITEMS.map((item) => (
-                <a class:list={["nav-btn", { active: activePage === item.page }]} href={langPath(lang, item.href)}>
-                    <i class={`fas ${item.icon}`}></i> <span>{dict[item.key]}</span>
+                <a
+                    class:list={["nav-btn", { active: activePage === item.page }]}
+                    href={langPath(lang, item.href)}
+                    aria-label={dict[item.key]}
+                >
+                    <Icon name={item.icon} class="icon" /> <span aria-hidden="true">{dict[item.key]}</span>
                 </a>
             ))}
         </nav>
 
-        <slot />
+        <main>
+            <slot />
+        </main>
     </div>
 
     <!-- KAIDEN_BREAK EASTER EGG -->
