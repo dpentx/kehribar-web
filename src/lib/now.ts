@@ -9,7 +9,7 @@ export interface NowData {
 export async function loadNow(): Promise<NowData> {
   const fs = await import('node:fs/promises');
   const path = await import('node:path');
-  const filePath = path.resolve('./now.json');
+  const filePath = path.resolve('./currently.json');
   const text = await fs.readFile(filePath, 'utf-8');
   return JSON.parse(text) as NowData;
 }
