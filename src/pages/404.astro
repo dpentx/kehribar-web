@@ -1,0 +1,16 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+
+const path = Astro.url.pathname;
+---
+
+<Layout title="404 — Kehribar" activePage="" lang="tr">
+    <div class="hero">
+        <span class="eyebrow">error</span>
+        <h1>attribute 'sayfa' bulunamadı</h1>
+        <p class="bio">Bu flake'in çıktılarında böyle bir yol yok. Sol menüden gerçekten var olan bir attribute'a geçebilirsin.</p>
+        <div class="nix-block">error: <span class="str">"{path}"</span><span class="punct"> is not a valid attribute in this flake</span><span class="nix-cursor"></span></div>
+    </div>
+    <a href="/" class="back-link"><Icon name="arrow-left" class="icon" /> anasayfaya dön</a>
+</Layout>

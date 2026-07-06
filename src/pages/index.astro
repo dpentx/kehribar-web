@@ -1,42 +1,53 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { fetchGithubStats } from '../lib/github';
+import { loadNow, nowText } from '../lib/now';
 import { getCollection } from 'astro:content';
-import { translations } from '../lib/i18n';
 
 const lang = 'tr' as const;
-const dict = translations[lang];
 
-const [stats, blogPosts] = await Promise.all([fetchGithubStats(), getCollection('blog')]);
+const [stats, blogPosts, now] = await Promise.all([fetchGithubStats(), getCollection('blog'), loadNow()]);
 const postCount = blogPosts.filter((p) => p.id.startsWith(`${lang}/`)).length;
 ---
 
-<Layout title="Kehribar - I use NixOS BTW!" lang={lang} activePage="home">
-    <section id="home" class="section active">
-        <div class="stats">
-            <div class="stat-card">
-                <div class="stat-value">{postCount}</div>
-                <div class="stat-label">{dict['stat-blogs']}</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">{stats.repoCount}</div>
-                <div class="stat-label">{dict['stat-repos']}</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">{stats.starCount}</div>
-                <div class="stat-label">{dict['stat-stars']}</div>
-            </div>
+<Layout title="Kehribar — dpentx" lang={lang} activePage="home">
+    <div class="hero">
+        <span class="eyebrow">~/kehribar</span>
+        <h1>NixOS kullanan, çeviri yapan biri.</h1>
+        <p class="bio">Açık kaynak projelere katkı sağlıyorum, masaüstümü fazlasıyla özelleştiriyorum ve boş zamanlarımda İngilizce'den Türkçe'ye çeviri yapıyorum.</p>
+        <p class="now-line"><span class="amber">▸ şu an:</span> {nowText(now, lang)}</p>
+        <div class="nix-block">{"{"}
+  <span class="key">name</span> = <span class="str">"kehribar"</span>;
+  <span class="key">os</span> = <span class="str">"NixOS"</span>;
+  <span class="key">compositor</span> = <span class="str">"niri"</span>;
+  <span class="key">translates</span> = [ <span class="str">"en"</span> <span class="str">"tr"</span> ];
+{"}"}<span class="nix-cursor"></span></div>
+    </div>
+
+    <div class="stat-row">
+        <div class="stat-cell">
+            <span class="n">{postCount}</span>
+            <span class="l">blog yazısı</span>
         </div>
-        <div style="text-align: center; margin-top: 2rem;">
-            <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 0.5rem;">🌲 Visitor Counter 🌲</p>
-            <img
-                src="https://count.getloli.com/@dpentx?name=everforest&theme=rule34&padding=7&offset=0&align=top&scale=1&pixelated=1&darkmode=1"
-                alt="visitor count"
-                loading="lazy"
-                width="140"
-                height="35"
-                style="border-radius:8px;height:auto;"
-            >
+        <div class="stat-cell">
+            <span class="n">{stats.repoCount}</span>
+            <span class="l">repo</span>
         </div>
-    </section>
+        <div class="stat-cell">
+            <span class="n">{stats.starCount}</span>
+            <span class="l">yıldız</span>
+        </div>
+    </div>
+
+    <div style="text-align: center;">
+        <p style="color: var(--ink-dim); font-family: var(--mono); font-size: 0.75rem; margin-bottom: 0.5rem;">visitor counter</p>
+        <img
+            src="https://count.getloli.com/@dpentx?name=everforest&theme=rule34&padding=7&offset=0&align=top&scale=1&pixelated=1&darkmode=1"
+            alt="visitor count"
+            loading="lazy"
+            width="140"
+            height="35"
+            style="border-radius:8px;height:auto;"
+        >
+    </div>
 </Layout>

@@ -12,8 +12,8 @@ interface Props {
 }
 
 const {
-  title = 'Kehribar - I use NixOS BTW!',
-  description = 'Kehribar (dpentx) - NixOS, açık kaynak ve çeviri projeleri üzerine kişisel site.',
+  title = 'Kehribar — dpentx',
+  description = 'Kehribar (dpentx) — NixOS, açık kaynak ve çeviri projeleri üzerine kişisel site.',
   lang = 'tr',
   activePage = 'home',
 } = Astro.props;
@@ -21,14 +21,11 @@ const {
 const avatarUrl = 'https://github.com/dpentx.png?size=200'; // stable, doesn't depend on any build-time API call succeeding
 
 const dict = translations[lang];
-
-// The lang switcher jumps to the equivalent page (by activePage) in the
-// other language — e.g. from /contact it goes to /en/contact, from an
-// individual blog post it falls back to the blog listing in that language
-// since a 1:1 translated post isn't guaranteed to exist.
 const currentNavItem = NAV_ITEMS.find((i) => i.page === activePage) ?? NAV_ITEMS[0];
 const trHref = langPath('tr', currentNavItem.href);
 const enHref = langPath('en', currentNavItem.href);
+const searchIndexUrl = langPath(lang, '/search-index.json');
+const rssUrl = langPath(lang, '/rss.xml');
 ---
 
 <!DOCTYPE html>
@@ -39,63 +36,84 @@ const enHref = langPath('en', currentNavItem.href);
     <title>{title}</title>
     <meta name="description" content={description}>
     <link rel="icon" href="https://github.com/dpentx.png?size=64" type="image/png">
+    <link rel="alternate" type="application/rss+xml" title="Kehribar Blog" href={rssUrl}>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://avatars.githubusercontent.com" crossorigin>
     <link rel="dns-prefetch" href="https://api.github.com">
-    <!-- Fonts load async (preload + swap-on-load) instead of as a
-         render-blocking <link rel="stylesheet">, so the page can paint with
-         the fallback font immediately; text re-flows once the webfont
-         arrives (already using font-display=swap). -->
     <link
         rel="preload"
         as="style"
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
         onload="this.onload=null;this.rel='stylesheet'"
     >
     <noscript>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
     </noscript>
     <ClientRouter />
-    <!-- No Tailwind: the original CDN script wasn't actually used by any
-         markup here (zero utility classes in the whole site), so it was
-         pure dead weight. Dropped entirely instead of build-time-compiling
-         a framework that isn't used.
-         No Font Awesome CDN either: icons are inlined as SVG at build time
-         (see src/components/Icon.astro) instead of loading an entire
-         render-blocking icon-font stylesheet for ~16 icons. -->
+    <!-- No Tailwind, no Font Awesome CDN: icons are inlined SVG (see
+         src/components/Icon.astro), custom CSS only. -->
 </head>
 <body>
     <div class="lang-switcher">
-        <button class="theme-btn" id="theme-toggle" title="True Black" aria-label="True Black tema aç/kapat">
-            <Icon name="circle-half-stroke" class="icon" />
-        </button>
-        <a class:list={["lang-btn", { active: lang === 'tr' }]} href={trHref} data-lang-link="tr">🇹🇷 TR</a>
-        <a class:list={["lang-btn", { active: lang === 'en' }]} href={enHref} data-lang-link="en">🇬🇧 EN</a>
+        <a href={rssUrl} class="lang-btn" title="RSS" aria-label="RSS feed">
+            <Icon name="rss" class="icon" />
+        </a>
+        <a class:list={["lang-btn", { active: lang === 'tr' }]} href={trHref} data-lang-link="tr">TR</a>
+        <a class:list={["lang-btn", { active: lang === 'en' }]} href={enHref} data-lang-link="en">EN</a>
     </div>
 
-    <div class="container">
-        <header>
-            <img id="avatar" class="avatar" src={avatarUrl} alt="Avatar" loading="eager" width="108" height="108">
-            <h1 id="username">Kehribar</h1>
-            <p class="bio" id="bio-text">{dict['bio-text']}</p>
-        </header>
+    <div class="shell">
+        <aside class="rail">
+            <div class="rail-id">
+                <img class="avatar" src={avatarUrl} alt="Avatar" loading="eager" width="56" height="56">
+                <div>
+                    <div class="rail-name">Kehribar</div>
+                    <div class="rail-handle">@dpentx</div>
+                </div>
+            </div>
 
-        <nav aria-label="Ana navigasyon">
-            {NAV_ITEMS.map((item) => (
-                <a
-                    class:list={["nav-btn", { active: activePage === item.page }]}
-                    href={langPath(lang, item.href)}
-                    aria-label={dict[item.key]}
-                >
-                    <Icon name={item.icon} class="icon" /> <span aria-hidden="true">{dict[item.key]}</span>
-                </a>
-            ))}
-        </nav>
+            <nav class="rail-nav" aria-label="Ana navigasyon">
+                {NAV_ITEMS.map((item) => (
+                    <a
+                        class:list={["rail-link", { active: activePage === item.page }]}
+                        href={langPath(lang, item.href)}
+                    >
+                        <span class="dot">·</span>
+                        <Icon name={item.icon} class="icon" />
+                        <span>{dict[item.key]}</span>
+                    </a>
+                ))}
+            </nav>
+
+            <div class="rail-tools">
+                <button class="rail-btn" id="cmdk-trigger" aria-label={dict['cmdk-placeholder']}>
+                    <Icon name="magnifying-glass" class="icon" />
+                    <span>/</span>
+                </button>
+                <button class="rail-btn" id="theme-toggle" aria-label="True Black">
+                    <Icon name="circle-half-stroke" class="icon" />
+                    <span>{dict['theme-label']}</span>
+                </button>
+            </div>
+        </aside>
 
         <main>
             <slot />
         </main>
+    </div>
+
+    <!-- command palette -->
+    <div class="cmdk-backdrop" id="cmdk-backdrop">
+        <div class="cmdk-panel" role="dialog" aria-modal="true" aria-label={dict['cmdk-placeholder']}>
+            <input class="cmdk-input" id="cmdk-input" type="text" placeholder={dict['cmdk-placeholder']} autocomplete="off" spellcheck="false">
+            <div class="cmdk-list" id="cmdk-list"></div>
+            <div class="cmdk-hint">
+                <span><kbd>↑↓</kbd> {dict['cmdk-hint-nav']}</span>
+                <span><kbd>↵</kbd> {dict['cmdk-hint-select']}</span>
+                <span><kbd>esc</kbd> {dict['cmdk-hint-close']}</span>
+            </div>
+        </div>
     </div>
 
     <!-- KAIDEN_BREAK EASTER EGG -->
@@ -104,21 +122,21 @@ const enHref = langPath('en', currentNavItem.href);
             <ellipse cx="130" cy="190" rx="95" ry="14" fill="#000" opacity="0.25"/>
             <path d="M70 80 Q40 30 60 35 Q85 40 90 70 Z" fill="#e69875"/>
             <path d="M190 80 Q220 30 200 35 Q175 40 170 70 Z" fill="#e69875"/>
-            <path d="M78 78 Q58 45 70 48 Q86 52 88 70 Z" fill="#2d353b"/>
-            <path d="M182 78 Q202 45 190 48 Q174 52 172 70 Z" fill="#2d353b"/>
+            <path d="M78 78 Q58 45 70 48 Q86 52 88 70 Z" fill="#16130f"/>
+            <path d="M182 78 Q202 45 190 48 Q174 52 172 70 Z" fill="#16130f"/>
             <ellipse cx="130" cy="130" rx="92" ry="78" fill="#e69875"/>
             <ellipse cx="130" cy="150" rx="55" ry="45" fill="#f3d9bd"/>
-            <circle cx="98" cy="118" r="11" fill="#2d353b"/>
-            <circle cx="162" cy="118" r="11" fill="#2d353b"/>
+            <circle cx="98" cy="118" r="11" fill="#16130f"/>
+            <circle cx="162" cy="118" r="11" fill="#16130f"/>
             <circle cx="101" cy="114" r="3" fill="#fff"/>
             <circle cx="165" cy="114" r="3" fill="#fff"/>
-            <path d="M122 138 Q130 145 138 138 Q134 148 130 148 Q126 148 122 138Z" fill="#d699b6"/>
-            <path d="M130 146 Q120 158 105 154" stroke="#2d353b" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-            <path d="M130 146 Q140 158 155 154" stroke="#2d353b" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-            <line x1="70" y1="128" x2="40" y2="122" stroke="#2d353b" stroke-width="1.5"/>
-            <line x1="70" y1="136" x2="38" y2="136" stroke="#2d353b" stroke-width="1.5"/>
-            <line x1="190" y1="128" x2="220" y2="122" stroke="#2d353b" stroke-width="1.5"/>
-            <line x1="190" y1="136" x2="222" y2="136" stroke="#2d353b" stroke-width="1.5"/>
+            <path d="M122 138 Q130 145 138 138 Q134 148 130 148 Q126 148 122 138Z" fill="#d97757"/>
+            <path d="M130 146 Q120 158 105 154" stroke="#16130f" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <path d="M130 146 Q140 158 155 154" stroke="#16130f" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <line x1="70" y1="128" x2="40" y2="122" stroke="#16130f" stroke-width="1.5"/>
+            <line x1="70" y1="136" x2="38" y2="136" stroke="#16130f" stroke-width="1.5"/>
+            <line x1="190" y1="128" x2="220" y2="122" stroke="#16130f" stroke-width="1.5"/>
+            <line x1="190" y1="136" x2="222" y2="136" stroke="#16130f" stroke-width="1.5"/>
             <ellipse cx="100" cy="195" rx="20" ry="13" fill="#e69875"/>
             <ellipse cx="160" cy="195" rx="20" ry="13" fill="#e69875"/>
             <path d="M205 150 Q250 140 245 95 Q243 75 225 80" stroke="#e69875" stroke-width="16" fill="none" stroke-linecap="round"/>
@@ -126,16 +144,15 @@ const enHref = langPath('en', currentNavItem.href);
         <div class="kaiden-caption">🐾 Kaiden Break! Biraz mola ver 🐾</div>
     </div>
 
-    <script>
-        // Event delegation attached once on `document` — safe across every
-        // View Transitions soft navigation regardless of whether Astro
-        // reuses or replaces the underlying header/nav DOM nodes.
+    <script define:vars={{ searchIndexUrl, jumpToLabel: dict['jump-to'], emptyLabel: dict['cmdk-empty'] }}>
+        // ---------- theme + lang preference (event delegation, attached
+        // once on `document` — safe across every View Transitions swap) ----------
         (function () {
             const savedTheme = localStorage.getItem('trueBlack');
             if (savedTheme === '1') document.body.classList.add('true-black');
 
             document.addEventListener('click', (e) => {
-                const target = e.target as HTMLElement;
+                const target = e.target;
                 const themeBtn = target.closest('#theme-toggle');
                 if (themeBtn) {
                     document.body.classList.toggle('true-black');
@@ -149,14 +166,109 @@ const enHref = langPath('en', currentNavItem.href);
                 }
             });
 
-            // Re-apply the True Black class after each soft navigation swap
-            // (astro:before-swap runs before the new body replaces the old one).
             document.addEventListener('astro:after-swap', () => {
                 if (localStorage.getItem('trueBlack') === '1') document.body.classList.add('true-black');
             });
         })();
 
-        // KAIDEN_BREAK EASTER EGG TRIGGER: klavyeden "kaiden break" yazınca açılır.
+        // ---------- command palette ----------
+        (function () {
+            const backdrop = document.getElementById('cmdk-backdrop');
+            const input = document.getElementById('cmdk-input');
+            const list = document.getElementById('cmdk-list');
+            const trigger = document.getElementById('cmdk-trigger');
+            if (!backdrop || !input || !list) return;
+
+            let items = null; // lazy-loaded search index
+            let activeIndex = 0;
+
+            async function ensureItems() {
+                if (items) return items;
+                try {
+                    const res = await fetch(searchIndexUrl);
+                    items = await res.json();
+                } catch {
+                    items = [];
+                }
+                return items;
+            }
+
+            function render(filtered) {
+                list.innerHTML = '';
+                if (filtered.length === 0) {
+                    const empty = document.createElement('div');
+                    empty.className = 'cmdk-empty';
+                    empty.textContent = emptyLabel;
+                    list.appendChild(empty);
+                    return;
+                }
+                filtered.forEach((it, i) => {
+                    const a = document.createElement('a');
+                    a.href = it.url;
+                    a.className = 'cmdk-item';
+                    a.dataset.active = i === activeIndex ? 'true' : 'false';
+                    a.innerHTML = `<span>${it.title}</span>`;
+                    list.appendChild(a);
+                });
+            }
+
+            async function open() {
+                backdrop.classList.add('show');
+                input.value = '';
+                input.focus();
+                activeIndex = 0;
+                const all = await ensureItems();
+                render(all);
+            }
+
+            function close() {
+                backdrop.classList.remove('show');
+            }
+
+            trigger?.addEventListener('click', open);
+
+            document.addEventListener('keydown', (e) => {
+                const tag = (e.target && e.target.tagName) || '';
+                const typing = tag === 'INPUT' || tag === 'TEXTAREA';
+                if (e.key === '/' && !typing) {
+                    e.preventDefault();
+                    open();
+                } else if (e.key === 'Escape' && backdrop.classList.contains('show')) {
+                    close();
+                }
+            });
+
+            backdrop.addEventListener('click', (e) => {
+                if (e.target === backdrop) close();
+            });
+
+            input.addEventListener('input', async () => {
+                const all = await ensureItems();
+                const q = input.value.trim().toLowerCase();
+                const filtered = q ? all.filter((it) => it.title.toLowerCase().includes(q)) : all;
+                activeIndex = 0;
+                render(filtered);
+            });
+
+            input.addEventListener('keydown', (e) => {
+                const rows = Array.from(list.querySelectorAll('.cmdk-item'));
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    activeIndex = Math.min(activeIndex + 1, rows.length - 1);
+                    rows.forEach((r, i) => (r.dataset.active = i === activeIndex ? 'true' : 'false'));
+                    rows[activeIndex]?.scrollIntoView({ block: 'nearest' });
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    activeIndex = Math.max(activeIndex - 1, 0);
+                    rows.forEach((r, i) => (r.dataset.active = i === activeIndex ? 'true' : 'false'));
+                    rows[activeIndex]?.scrollIntoView({ block: 'nearest' });
+                } else if (e.key === 'Enter') {
+                    rows[activeIndex]?.click();
+                }
+            });
+        })();
+
+        // ---------- KAIDEN_BREAK EASTER EGG: type "kaiden break" ----------
         (function () {
             let typed = '';
             document.addEventListener('keydown', (e) => {
@@ -168,16 +280,12 @@ const enHref = langPath('en', currentNavItem.href);
             });
         })();
 
-        // Register the service worker for offline/repeat-visit caching of
-        // static assets (CSS is inlined per-page by Astro, this mainly
-        // helps fonts, icons and repeat navigations).
+        // ---------- service worker ----------
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js').catch(() => {});
             });
         }
     </script>
-
-
 </body>
 </html>

@@ -1,33 +1,36 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Icon from '../../components/Icon.astro';
-import { translations } from '../../lib/i18n';
 
 const lang = 'tr' as const;
-const dict = translations[lang];
 ---
 
-<Layout title="İletişim - Kehribar" lang={lang} activePage="contact">
-    <section id="contact" class="section active">
-        <div style="text-align:center;margin-bottom:1.5rem;">
-            <h2 style="color:var(--green);margin-bottom:0.5rem;">{dict['contact-title']}</h2>
-            <p style="color:var(--text-dim);font-size:0.9rem;">{dict['contact-subtitle']}</p>
-        </div>
-        <div class="contact-links">
-            <a href="https://github.com/dpentx" target="_blank" rel="noopener noreferrer" class="contact-link">
-                <Icon name="github" class="icon" />
-                <div class="contact-title">GitHub</div>
-                <div class="contact-desc">{dict['contact-github-desc']}</div>
-            </a>
-            <a href="https://myanimelist.net/profile/dpenx" target="_blank" rel="noopener noreferrer" class="contact-link">
-                <Icon name="book" class="icon" />
-                <div class="contact-title">MyAnimeList</div>
-                <div class="contact-desc">{dict['contact-mal-desc']}</div>
-            </a>
-        </div>
-        <div class="contact-note">
-            <p style="color: var(--text); margin-bottom: 0.5rem;"><Icon name="handshake" class="icon" style="color: var(--green);" /> <strong>{dict['contact-note-title']}</strong></p>
-            <p style="color: var(--text-dim); font-size: 0.88rem;">{dict['contact-note-text']}</p>
-        </div>
-    </section>
+<Layout title="İletişim — Kehribar" lang={lang} activePage="contact">
+    <div class="hero">
+        <span class="eyebrow">reach</span>
+        <h1>İletişim</h1>
+        <p class="bio">Benimle iletişime geçmek için aşağıdaki platformları kullanabilirsin.</p>
+    </div>
+
+    <div class="contact-grid">
+        <a href="https://github.com/dpentx" target="_blank" rel="noopener noreferrer" class="contact-row">
+            <Icon name="github" class="icon" />
+            <div>
+                <div class="name">GitHub</div>
+                <div class="desc">Açık kaynak projelerim ve katkılarım</div>
+            </div>
+        </a>
+        <a href="https://myanimelist.net/profile/dpenx" target="_blank" rel="noopener noreferrer" class="contact-row">
+            <Icon name="book" class="icon" />
+            <div>
+                <div class="name">MyAnimeList</div>
+                <div class="desc">Anime izleme listem ve değerlendirmelerim</div>
+            </div>
+        </a>
+    </div>
+
+    <div class="note-block">
+        <div class="head"><Icon name="handshake" class="icon" /> Açık kaynak katkıları</div>
+        <p>Açık kaynak projelere katkı yapmaktan ve işbirliği yapmaktan mutluluk duyuyorum. GitHub üzerinden benimle iletişime geçebilir, projelerime katkı sağlayabilirsin.</p>
+    </div>
 </Layout>

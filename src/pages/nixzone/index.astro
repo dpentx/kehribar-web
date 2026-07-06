@@ -2,10 +2,9 @@
 import Layout from '../../layouts/Layout.astro';
 import Icon from '../../components/Icon.astro';
 import { getCollection } from 'astro:content';
-import { translations, langPath } from '../../lib/i18n';
+import { langPath } from '../../lib/i18n';
 
 const lang = 'tr' as const;
-const dict = translations[lang];
 
 const allPosts = await getCollection('nixzone');
 const posts = allPosts
@@ -18,47 +17,44 @@ const posts = allPosts
   .sort((a, b) => (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0));
 ---
 
-<Layout title="NixZONE - Kehribar" lang={lang} activePage="nixzone">
-    <section id="nixzone" class="section active">
-        <div class="nix-hero">
-            <div class="nix-hero-title"><Icon name="snowflake" class="icon" /> NixZONE</div>
-            <div class="nix-hero-sub">{dict['nixzone-sub']}</div>
-            <div class="nix-tags">
-                <span class="nix-tag">❄️ NixOS</span>
-                <span class="nix-tag">🌲 Everforest</span>
-                <span class="nix-tag">📦 Nix Flakes</span>
-                <span class="nix-tag">🏠 Home Manager</span>
-            </div>
-        </div>
-        <div class="nix-posts-title">{dict['nixzone-posts-title']}</div>
-        <div class="search-box" id="nix-search-box">
-            <Icon name="magnifying-glass" class="icon search-icon" />
-            <input type="text" id="nix-search" placeholder={lang === 'tr' ? 'Yazı ara...' : 'Search posts...'}>
-            <button class="search-clear" id="nix-search-clear" aria-label="clear"><Icon name="xmark" class="icon" /></button>
-        </div>
+<Layout title="NixZONE — Kehribar" lang={lang} activePage="nixzone">
+    <div class="hero">
+        <span class="eyebrow">/etc/nixos</span>
+        <h1>NixZONE</h1>
+        <p class="bio">Kurulum detayları, masaüstü rice'ları ve konfigürasyon notları.</p>
+    </div>
 
-        {posts.length === 0 ? (
-            <p style="padding:1.5rem;color:var(--text-dim);text-align:center;background:var(--bg-light);border-radius:10px;border:1px dashed var(--border-soft);">
-                {dict['nixzone-empty']}
-            </p>
-        ) : (
-            <ul id="nixzone-list" class="file-list">
-                {posts.map((post) => (
-                    <li class="file-item" data-search={post.title.toLowerCase()}>
-                        <a href={langPath(lang, `/nixzone/${post.slug}`)} style="color:inherit;text-decoration:none;display:flex;align-items:center;gap:0.6rem;width:100%;">
-                            <Icon name="file-lines" class="icon" /> {post.title}
-                        </a>
-                    </li>
-                ))}
-            </ul>
-        )}
-    </section>
+    <div class="section-head">
+        <h2>yazılar</h2>
+        <span class="count">{posts.length}</span>
+    </div>
+
+    <div class="search-box" id="nix-search-box">
+        <Icon name="magnifying-glass" class="icon search-icon" />
+        <input type="text" id="nix-search" placeholder="Yazı ara...">
+        <button class="search-clear" id="nix-search-clear" aria-label="clear"><Icon name="xmark" class="icon" /></button>
+    </div>
+
+    {posts.length === 0 ? (
+        <p class="empty-state">Henüz yazı yok — yakında gelecek.</p>
+    ) : (
+        <div class="ledger" id="nixzone-list">
+            {posts.map((post) => (
+                <a href={langPath(lang, `/nixzone/${post.slug}`)} class="ledger-row" data-search={post.title.toLowerCase()}>
+                    <span class="idx">{post.date ? post.date.toISOString().slice(0, 10) : '—'}</span>
+                    <div class="body">
+                        <div class="title">{post.title} <Icon name="arrow-left" class="icon arrow" style="transform:rotate(180deg);" /></div>
+                    </div>
+                </a>
+            ))}
+        </div>
+    )}
 
     <script>
         document.addEventListener('astro:page-load', () => {
             const input = document.getElementById('nix-search') as HTMLInputElement | null;
             const clearBtn = document.getElementById('nix-search-clear');
-            const items = document.querySelectorAll('#nixzone-list .file-item');
+            const items = document.querySelectorAll('#nixzone-list .ledger-row');
             if (!input) return;
 
             function applyFilter() {

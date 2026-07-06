@@ -21,12 +21,12 @@ const title = post.data.title ?? post.id.split('/').pop()?.replace(/\.md$/, '') 
 ---
 
 <Layout title={`${title} - Kehribar`} description={post.data.description} lang={lang} activePage="blog">
-    <section class="section active">
-        <a href={langPath(lang, '/blog')} style="color:var(--green);text-decoration:none;display:inline-flex;align-items:center;gap:0.4rem;margin-bottom:1rem;">
+    <section>
+        <a href={langPath(lang, '/blog')} class="back-link">
             <Icon name="arrow-left" class="icon" /> {dict['back']}
         </a>
         <div class="markdown-content">
-            <h1 style="color:var(--green);margin-bottom:1rem;">{title}</h1>
+            <h1>{title}</h1>
             <Content />
         </div>
     </section>

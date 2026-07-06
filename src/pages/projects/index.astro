@@ -2,10 +2,8 @@
 import Layout from '../../layouts/Layout.astro';
 import Icon from '../../components/Icon.astro';
 import { fetchGithubStats } from '../../lib/github';
-import { translations } from '../../lib/i18n';
 
 const lang = 'tr' as const;
-const dict = translations[lang];
 
 const stats = await fetchGithubStats();
 const repos = stats.repos
@@ -13,34 +11,31 @@ const repos = stats.repos
   .sort((a, b) => b.stargazers_count - a.stargazers_count);
 ---
 
-<Layout title="Projeler - Kehribar" lang={lang} activePage="projects">
-    <section id="projects" class="section active">
-        {repos.length === 0 ? (
-            <p style="padding:1.5rem;color:var(--text-dim);text-align:center;">{dict['no-content']}</p>
-        ) : (
-            <div id="projects-list" style="display:flex;flex-direction:column;gap:0.75rem;">
-                {repos.map((repo) => (
-                    <a
-                        href={repo.html_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="contribution-card"
-                        style="text-decoration:none;"
-                    >
-                        <div class="contribution-header">
-                            <Icon name="code-branch" class="icon" style="color:var(--green);font-size:1.1rem;" />
-                            <span class="contribution-name">{repo.name}</span>
-                            {repo.stargazers_count > 0 && (
-                                <span style="margin-left:auto;color:var(--yellow);font-size:0.85rem;">
-                                    <Icon name="star" class="icon" /> {repo.stargazers_count}
-                                </span>
-                            )}
+<Layout title="Projeler — Kehribar" lang={lang} activePage="projects">
+    <div class="section-head">
+        <h2>projeler</h2>
+        <span class="count">{repos.length}</span>
+    </div>
+
+    {repos.length === 0 ? (
+        <p class="empty-state">İçerik bulunamadı.</p>
+    ) : (
+        <div class="ledger">
+            {repos.map((repo) => (
+                <a href={repo.html_url} target="_blank" rel="noopener noreferrer" class="ledger-row">
+                    <span class="idx">{repo.language ?? '—'}</span>
+                    <div class="body">
+                        <div class="title">
+                            {repo.name}
+                            <Icon name="arrow-left" class="icon arrow" style="transform:rotate(180deg);" />
                         </div>
-                        {repo.description && <p class="contribution-desc">{repo.description}</p>}
-                        {repo.language && <span class="contribution-badge">{repo.language}</span>}
-                    </a>
-                ))}
-            </div>
-        )}
-    </section>
+                        {repo.description && <div class="desc">{repo.description}</div>}
+                    </div>
+                    {repo.stargazers_count > 0 && (
+                        <span class="meta"><Icon name="star" class="icon" style="color:var(--amber);" /> {repo.stargazers_count}</span>
+                    )}
+                </a>
+            ))}
+        </div>
+    )}
 </Layout>
