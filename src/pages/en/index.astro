@@ -1,7 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Icon from '../../components/Icon.astro';
-import { fetchGithubStats } from '../../lib/github';
+import { fetchGithubStats, fetchMostActiveRepo } from '../../lib/github';
 import { loadNow, nowText } from '../../lib/now';
 import { loadContributions } from '../../lib/contributions';
 import { getCollection } from 'astro:content';
@@ -9,11 +9,12 @@ import { langPath } from '../../lib/i18n';
 
 const lang = 'en' as const;
 
-const [stats, blogAll, now, contributions] = await Promise.all([
+const [stats, blogAll, now, contributions, activeRepo] = await Promise.all([
     fetchGithubStats(),
     getCollection('blog'),
     loadNow(),
     loadContributions(),
+    fetchMostActiveRepo(),
 ]);
 
 const posts = blogAll

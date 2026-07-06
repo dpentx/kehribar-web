@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Icon from '../components/Icon.astro';
-import { fetchGithubStats } from '../lib/github';
+import { fetchGithubStats, fetchMostActiveRepo } from '../lib/github';
 import { loadNow, nowText } from '../lib/now';
 import { loadContributions } from '../lib/contributions';
 import { getCollection } from 'astro:content';
@@ -9,11 +9,12 @@ import { langPath } from '../lib/i18n';
 
 const lang = 'tr' as const;
 
-const [stats, blogAll, now, contributions] = await Promise.all([
+const [stats, blogAll, now, contributions, activeRepo] = await Promise.all([
     fetchGithubStats(),
     getCollection('blog'),
     loadNow(),
     loadContributions(),
+    fetchMostActiveRepo(),
 ]);
 
 const posts = blogAll
@@ -47,7 +48,11 @@ const nixCode = `{
         <span class="eyebrow">~/kehribar</span>
         <h1>NixOS kullanan, çeviri yapan biri.</h1>
         <p class="bio">Açık kaynak projelere katkı sağlıyorum, masaüstümü fazlasıyla özelleştiriyorum ve boş zamanlarımda İngilizce'den Türkçe'ye çeviri yapıyorum. Buraya işletim sistemleri, yapılandırma notları ve öğrendiklerimi yazıyorum.</p>
-        <p class="now-line"><span class="amber">▸ şu an:</span> {nowText(now, lang)}</p>
+        {activeRepo ? (
+            <p class="now-line"><span class="amber">▸ şu an uğraştığın proje:</span> <a href={activeRepo.url} target="_blank" rel="noopener noreferrer" class="now-repo">{activeRepo.name}</a></p>
+        ) : (
+            <p class="now-line"><span class="amber">▸ şu an:</span> {nowText(now, lang)}</p>
+        )}
         <div class="nix-block" set:html={nixCode}></div>
     </div>
 
