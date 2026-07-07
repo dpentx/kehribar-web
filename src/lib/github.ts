@@ -41,6 +41,58 @@ const FALLBACK: GithubStats = {
   repos: [],
 };
 
+export interface ActiveRepo {
+  name: string;
+  url: string;
+  commits: number;
+}
+
+// Finds the repo the user pushed the most commits to in the last 7 days,
+// using the public events feed (build-time, same rate-limit friendliness as
+// fetchGithubStats). Returns null if there was no push activity or the fetch
+// failed, so the caller can fall back to the static "currently" text.
+export async function fetchMostActiveRepo(): Promise<ActiveRepo | null> {
+  try {
+    const headers = { Accept: 'application/vnd.github+json', ...authHeaders() };
+    const res = await fetch(
+      `https://api.github.com/users/${GITHUB_USERNAME}/events/public?per_page=100`,
+      { headers },
+    );
+    if (!res.ok) {
+      console.warn(`[github] events fetch failed (${res.status}) — no active repo`);
+      return null;
+    }
+
+    const events = (await res.json()) as Array<{
+      type: string;
+      created_at: string;
+      repo?: { name: string };
+      payload?: { commits?: unknown[]; size?: number };
+    }>;
+
+    const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    const counts = new Map<string, number>();
+
+    for (const ev of events) {
+      if (ev.type !== 'PushEvent' || !ev.repo?.name) continue;
+      if (new Date(ev.created_at).getTime() < weekAgo) continue;
+      const size = ev.payload?.commits?.length ?? ev.payload?.size ?? 0;
+      counts.set(ev.repo.name, (counts.get(ev.repo.name) ?? 0) + size);
+    }
+
+    let top: ActiveRepo | null = null;
+    for (const [fullName, commits] of counts) {
+      if (!top || commits > top.commits) {
+        top = { name: fullName.split('/').pop() ?? fullName, url: `https://github.com/${fullName}`, commits };
+      }
+    }
+    return top;
+  } catch (err) {
+    console.warn('[github] events fetch threw — no active repo:', err);
+    return null;
+  }
+}
+
 export async function fetchGithubStats(): Promise<GithubStats> {
   try {
     const headers = { Accept: 'application/vnd.github+json', ...authHeaders() };

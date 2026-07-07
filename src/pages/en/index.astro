@@ -1,32 +1,60 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { fetchGithubStats } from '../../lib/github';
+import Icon from '../../components/Icon.astro';
+import { fetchGithubStats, fetchMostActiveRepo } from '../../lib/github';
 import { loadNow, nowText } from '../../lib/now';
+import { loadContributions } from '../../lib/contributions';
 import { getCollection } from 'astro:content';
+import { langPath } from '../../lib/i18n';
 
 const lang = 'en' as const;
 
-const [stats, blogPosts, now] = await Promise.all([fetchGithubStats(), getCollection('blog'), loadNow()]);
-const postCount = blogPosts.filter((p) => p.id.startsWith(`${lang}/`)).length;
+const [stats, blogAll, now, contributions, activeRepo] = await Promise.all([
+    fetchGithubStats(),
+    getCollection('blog'),
+    loadNow(),
+    loadContributions(),
+    fetchMostActiveRepo(),
+]);
+
+const posts = blogAll
+    .filter((p) => p.id.startsWith(`${lang}/`))
+    .map((p) => ({
+        slug: p.id.slice(lang.length + 1).replace(/\.md$/, ''),
+        title: p.data.title ?? p.id.split('/').pop()?.replace(/\.md$/, '') ?? p.id,
+        date: p.data.date,
+        description: p.data.description,
+    }))
+    .sort((a, b) => (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0));
+const recentPosts = posts.slice(0, 3);
+
+const featuredRepos = stats.repos
+    .filter((r) => !r.fork)
+    .sort((a, b) => b.stargazers_count - a.stargazers_count)
+    .slice(0, 4);
+
+const recentContributions = contributions.slice(0, 3);
+
+const nixCode = `{
+  <span class="key">name</span> = <span class="str">"kehribar"</span>;
+  <span class="key">os</span> = <span class="str">"NixOS"</span>;
+  <span class="key">compositor</span> = <span class="str">"niri"</span>;
+  <span class="key">translates</span> = [ <span class="str">"en"</span> <span class="str">"tr"</span> ];
+}<span class="nix-cursor"></span>`;
 ---
 
 <Layout title="Kehribar — dpentx" lang={lang} activePage="home">
     <div class="hero">
         <span class="eyebrow">~/kehribar</span>
         <h1>NixOS user, occasional translator.</h1>
-        <p class="bio">I contribute to open source projects, over-customize my desktop, and translate English to Turkish in my spare time.</p>
+        <p class="bio">I contribute to open source projects, over-customize my desktop, and translate English to Turkish in my spare time. This is where I write about operating systems, configuration notes, and the things I learn along the way.</p>
         <p class="now-line"><span class="amber">▸ currently:</span> {nowText(now, lang)}</p>
-        <div class="nix-block">{"{"}
-  <span class="key">name</span> = <span class="str">"kehribar"</span>;
-  <span class="key">os</span> = <span class="str">"NixOS"</span>;
-  <span class="key">compositor</span> = <span class="str">"niri"</span>;
-  <span class="key">translates</span> = [ <span class="str">"en"</span> <span class="str">"tr"</span> ];
-{"}"}<span class="nix-cursor"></span></div>
+        <div class="nix-block" set:html={nixCode}></div>
     </div>
 
     <div class="stat-row">
         <div class="stat-cell">
-            <span class="n">{postCount}</span>
+            <span class="n">{posts.length}</span>
             <span class="l">blog posts</span>
         </div>
         <div class="stat-cell">
@@ -39,15 +67,99 @@ const postCount = blogPosts.filter((p) => p.id.startsWith(`${lang}/`)).length;
         </div>
     </div>
 
-    <div style="text-align: center;">
-        <p style="color: var(--ink-dim); font-family: var(--mono); font-size: 0.75rem; margin-bottom: 0.5rem;">visitor counter</p>
+    <!-- recent posts -->
+    <section class="home-section">
+        <div class="section-head">
+            <h2>recent posts</h2>
+            <span class="count">{posts.length}</span>
+            <a class="section-link" href={langPath(lang, '/blog')}>
+                all <Icon name="arrow-left" class="icon" style="transform:rotate(180deg);" />
+            </a>
+        </div>
+
+        {recentPosts.length === 0 ? (
+            <p class="empty-state">No blog posts yet — coming soon.</p>
+        ) : (
+            <div class="ledger">
+                {recentPosts.map((post) => (
+                    <a href={langPath(lang, `/blog/${post.slug}`)} class="ledger-row">
+                        <span class="idx">{post.date ? post.date.toISOString().slice(0, 10) : '—'}</span>
+                        <div class="body">
+                            <div class="title">{post.title} <Icon name="arrow-left" class="icon arrow" style="transform:rotate(180deg);" /></div>
+                            {post.description && <div class="desc">{post.description}</div>}
+                        </div>
+                    </a>
+                ))}
+            </div>
+        )}
+    </section>
+
+    <!-- featured projects -->
+    {featuredRepos.length > 0 && (
+        <section class="home-section">
+            <div class="section-head">
+                <h2>featured projects</h2>
+                <span class="count">{stats.repoCount}</span>
+                <a class="section-link" href={langPath(lang, '/projects')}>
+                    all <Icon name="arrow-left" class="icon" style="transform:rotate(180deg);" />
+                </a>
+            </div>
+
+            <div class="feature-grid">
+                {featuredRepos.map((repo) => (
+                    <a href={repo.html_url} target="_blank" rel="noopener noreferrer" class="feature-card">
+                        <div class="fc-top">
+                            <span class="fc-name">{repo.name}</span>
+                            {repo.stargazers_count > 0 && (
+                                <span class="fc-star"><Icon name="star" class="icon" /> {repo.stargazers_count}</span>
+                            )}
+                        </div>
+                        {repo.description && <p class="fc-desc">{repo.description}</p>}
+                        {repo.language && <span class="fc-lang">{repo.language}</span>}
+                    </a>
+                ))}
+            </div>
+        </section>
+    )}
+
+    <!-- recent contributions -->
+    {recentContributions.length > 0 && (
+        <section class="home-section">
+            <div class="section-head">
+                <h2>recent contributions</h2>
+                <span class="count">{contributions.length}</span>
+                <a class="section-link" href={langPath(lang, '/contributions')}>
+                    all <Icon name="arrow-left" class="icon" style="transform:rotate(180deg);" />
+                </a>
+            </div>
+
+            <div class="ledger">
+                {recentContributions.map((entry) => {
+                    const desc = entry.desc_en || entry.desc;
+                    return (
+                        <a class="ledger-row" href={entry.url || '#'} target="_blank" rel="noopener noreferrer">
+                            <span class="idx">translation</span>
+                            <div class="body">
+                                <div class="title">{entry._name} <Icon name="arrow-left" class="icon arrow" style="transform:rotate(180deg);" /></div>
+                                {desc && <div class="desc">{desc}</div>}
+                            </div>
+                            <span class="badge">TR</span>
+                        </a>
+                    );
+                })}
+            </div>
+        </section>
+    )}
+
+    <footer class="home-footer">
+        <p class="label">visitor counter</p>
         <img
             src="https://count.getloli.com/@dpentx?name=everforest&theme=rule34&padding=7&offset=0&align=top&scale=1&pixelated=1&darkmode=1"
             alt="visitor count"
             loading="lazy"
             width="140"
             height="35"
-            style="border-radius:8px;height:auto;"
+            style="border-radius:8px;height:auto;display:inline-block;"
         >
-    </div>
+    </footer>
 </Layout>
