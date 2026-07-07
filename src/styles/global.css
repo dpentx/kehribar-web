@@ -220,6 +220,13 @@ main { min-width: 0; }
     gap: 0.5rem;
 }
 .now-line .amber { color: var(--amber); }
+.now-repo {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: var(--rule-strong);
+    text-underline-offset: 2px;
+}
+.now-repo:hover { color: var(--amber); text-decoration-color: var(--amber); }
 
 .nix-block {
     font-family: var(--mono);

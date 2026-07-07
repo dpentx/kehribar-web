@@ -48,7 +48,11 @@ const nixCode = `{
         <span class="eyebrow">~/kehribar</span>
         <h1>NixOS user, occasional translator.</h1>
         <p class="bio">I contribute to open source projects, over-customize my desktop, and translate English to Turkish in my spare time. This is where I write about operating systems, configuration notes, and the things I learn along the way.</p>
-        <p class="now-line"><span class="amber">▸ currently:</span> {nowText(now, lang)}</p>
+        {activeRepo ? (
+            <p class="now-line"><span class="amber">▸ currently working on:</span> <a href={activeRepo.url} target="_blank" rel="noopener noreferrer" class="now-repo">{activeRepo.name}</a></p>
+        ) : (
+            <p class="now-line"><span class="amber">▸ currently:</span> {nowText(now, lang)}</p>
+        )}
         <div class="nix-block" set:html={nixCode}></div>
     </div>
 
