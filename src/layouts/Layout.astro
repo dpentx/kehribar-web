@@ -24,8 +24,16 @@ const dict = translations[lang];
 const currentNavItem = NAV_ITEMS.find((i) => i.page === activePage) ?? NAV_ITEMS[0];
 const trHref = langPath('tr', currentNavItem.href);
 const enHref = langPath('en', currentNavItem.href);
-const searchIndexUrl = langPath(lang, '/search-index.json');
 const rssUrl = langPath(lang, '/rss.xml');
+
+// The rail persists its DOM across navigations (see transition:persist
+// below), so a language switch won't naturally re-render its text. This
+// gives the client script both languages' labels to swap in after a
+// TR<->EN navigation.
+const railLabels = {
+    tr: { nav: NAV_ITEMS.map((i) => ({ page: i.page, label: translations.tr[i.key] })), navAria: 'Ana navigasyon', search: translations.tr['cmdk-placeholder'], empty: translations.tr['cmdk-empty'] },
+    en: { nav: NAV_ITEMS.map((i) => ({ page: i.page, label: translations.en[i.key] })), navAria: 'Main navigation', search: translations.en['cmdk-placeholder'], empty: translations.en['cmdk-empty'] },
+};
 ---
 
 <!DOCTYPE html>
@@ -55,16 +63,16 @@ const rssUrl = langPath(lang, '/rss.xml');
          src/components/Icon.astro), custom CSS only. -->
 </head>
 <body>
-    <div class="lang-switcher">
-        <a href={rssUrl} class="lang-btn" title="RSS" aria-label="RSS feed">
+    <div class="lang-switcher" transition:persist="lang-switcher">
+        <a href={rssUrl} class="lang-btn" id="rss-link" title="RSS" aria-label="RSS feed">
             <Icon name="rss" class="icon" />
         </a>
-        <a class:list={["lang-btn", { active: lang === 'tr' }]} href={trHref} data-lang-link="tr">TR</a>
-        <a class:list={["lang-btn", { active: lang === 'en' }]} href={enHref} data-lang-link="en">EN</a>
+        <a class:list={["lang-btn", { active: lang === 'tr' }]} href={trHref} id="lang-tr-link" data-lang-link="tr">TR</a>
+        <a class:list={["lang-btn", { active: lang === 'en' }]} href={enHref} id="lang-en-link" data-lang-link="en">EN</a>
     </div>
 
     <div class="shell">
-        <aside class="rail">
+        <aside class="rail" transition:persist="rail">
             <div class="rail-id">
                 <img class="avatar" src={avatarUrl} alt="Avatar" loading="eager" width="56" height="56">
                 <div>
@@ -73,15 +81,17 @@ const rssUrl = langPath(lang, '/rss.xml');
                 </div>
             </div>
 
-            <nav class="rail-nav" aria-label="Ana navigasyon">
+            <nav class="rail-nav" id="rail-nav" aria-label="Ana navigasyon">
                 {NAV_ITEMS.map((item) => (
                     <a
                         class:list={["rail-link", { active: activePage === item.page }]}
                         href={langPath(lang, item.href)}
+                        data-page={item.page}
+                        data-href={item.href}
                     >
                         <span class="dot">·</span>
                         <Icon name={item.icon} class="icon" />
-                        <span>{dict[item.key]}</span>
+                        <span class="label">{dict[item.key]}</span>
                     </a>
                 ))}
             </nav>
@@ -104,7 +114,7 @@ const rssUrl = langPath(lang, '/rss.xml');
     </div>
 
     <!-- command palette -->
-    <div class="cmdk-backdrop" id="cmdk-backdrop">
+    <div class="cmdk-backdrop" id="cmdk-backdrop" transition:persist="cmdk">
         <div class="cmdk-panel" role="dialog" aria-modal="true" aria-label={dict['cmdk-placeholder']}>
             <input class="cmdk-input" id="cmdk-input" type="text" placeholder={dict['cmdk-placeholder']} autocomplete="off" spellcheck="false">
             <div class="cmdk-list" id="cmdk-list"></div>
@@ -144,7 +154,76 @@ const rssUrl = langPath(lang, '/rss.xml');
         <div class="kaiden-caption">🐾 Kaiden Break! Biraz mola ver 🐾</div>
     </div>
 
-    <script define:vars={{ searchIndexUrl, jumpToLabel: dict['jump-to'], emptyLabel: dict['cmdk-empty'] }}>
+    <script define:vars={{ railLabels }}>
+        // IMPORTANT: this script tag is NOT guaranteed to re-execute on
+        // every soft navigation — if you return to a page whose script
+        // content is byte-identical to one already run, the browser/router
+        // may skip re-running it. So anything that needs to happen on
+        // EVERY navigation (including returning to a previously-visited
+        // page) must live inside an 'astro:page-load' listener, which
+        // Astro guarantees fires every time. Anything that must only ever
+        // run ONCE (attaching a `document`-level listener) goes behind the
+        // window.__kehribarInit guard below instead.
+        window.__kehribarRailLabels = railLabels;
+
+        // Keep the persisted rail (and lang-switcher) in sync with the
+        // current page after every navigation. Both persist their DOM
+        // nodes across navigations (see transition:persist above) to avoid
+        // a flash/flicker of a full re-render, which means none of their
+        // attributes — text, href, active-state — get refreshed by the
+        // server automatically. This derives all of it from the current
+        // URL/lang instead, so it's correct regardless of which page
+        // originally rendered the persisted markup.
+        function kehribarLangPath(lang, path) {
+            if (lang !== 'en') return path;
+            return path === '/' ? '/en' : '/en' + path;
+        }
+
+        function kehribarSyncRail() {
+            const lang = document.documentElement.lang === 'en' ? 'en' : 'tr';
+            const labels = window.__kehribarRailLabels[lang];
+            const path = location.pathname;
+
+            document.querySelectorAll('.rail-link').forEach((el) => {
+                const baseHref = el.dataset.href; // lang-agnostic, e.g. "/blog" or "/"
+                const label = labels.nav.find((n) => n.page === el.dataset.page);
+                const span = el.querySelector('.label');
+                if (label && span) span.textContent = label.label;
+
+                const newHref = kehribarLangPath(lang, baseHref);
+                el.setAttribute('href', newHref);
+
+                const isHome = baseHref === '/';
+                const active = isHome ? path === newHref : (path === newHref || path.startsWith(newHref + '/'));
+                el.classList.toggle('active', active);
+            });
+
+            const railNav = document.getElementById('rail-nav');
+            if (railNav) railNav.setAttribute('aria-label', labels.navAria);
+            const cmdkTrigger = document.getElementById('cmdk-trigger');
+            if (cmdkTrigger) cmdkTrigger.setAttribute('aria-label', labels.search);
+            const cmdkInput = document.getElementById('cmdk-input');
+            if (cmdkInput) cmdkInput.setAttribute('placeholder', labels.search);
+
+            // lang-switcher: recompute TR/EN/RSS targets from the current
+            // page's language-agnostic base path.
+            const isEnglish = path === '/en' || path.startsWith('/en/');
+            const basePath = isEnglish ? (path.slice(3) || '/') : path;
+            const trLink = document.getElementById('lang-tr-link');
+            const enLink = document.getElementById('lang-en-link');
+            const rssLink = document.getElementById('rss-link');
+            if (trLink) { trLink.setAttribute('href', basePath); trLink.classList.toggle('active', lang === 'tr'); }
+            if (enLink) { enLink.setAttribute('href', kehribarLangPath('en', basePath)); enLink.classList.toggle('active', lang === 'en'); }
+            if (rssLink) rssLink.setAttribute('href', kehribarLangPath(lang, '/rss.xml'));
+        }
+        kehribarSyncRail();
+        document.addEventListener('astro:page-load', kehribarSyncRail);
+
+        if (window.__kehribarInit) {
+            // Global listeners already attached on a previous page load —
+            // nothing further to do this navigation.
+        } else {
+        window.__kehribarInit = true;
         // ---------- theme + lang preference (event delegation, attached
         // once on `document` — safe across every View Transitions swap) ----------
         (function () {
@@ -180,13 +259,21 @@ const rssUrl = langPath(lang, '/rss.xml');
             if (!backdrop || !input || !list) return;
 
             let items = null; // lazy-loaded search index
+            let cachedUrl = null;
             let activeIndex = 0;
 
+            function currentLang() {
+                return document.documentElement.lang === 'en' ? 'en' : 'tr';
+            }
+
             async function ensureItems() {
-                if (items) return items;
+                const lang = currentLang();
+                const url = lang === 'en' ? '/en/search-index.json' : '/search-index.json';
+                if (items && cachedUrl === url) return items;
                 try {
-                    const res = await fetch(searchIndexUrl);
+                    const res = await fetch(url);
                     items = await res.json();
+                    cachedUrl = url;
                 } catch {
                     items = [];
                 }
@@ -198,7 +285,7 @@ const rssUrl = langPath(lang, '/rss.xml');
                 if (filtered.length === 0) {
                     const empty = document.createElement('div');
                     empty.className = 'cmdk-empty';
-                    empty.textContent = emptyLabel;
+                    empty.textContent = window.__kehribarRailLabels[currentLang()].empty;
                     list.appendChild(empty);
                     return;
                 }
@@ -286,6 +373,7 @@ const rssUrl = langPath(lang, '/rss.xml');
                 navigator.serviceWorker.register('/sw.js').catch(() => {});
             });
         }
+        } // end of window.__kehribarInit guard
     </script>
 </body>
 </html>
