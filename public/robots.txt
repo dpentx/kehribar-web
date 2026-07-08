@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kehribar.vercel.app/sitemap-index.xml
