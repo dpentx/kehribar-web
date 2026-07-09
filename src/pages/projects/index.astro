@@ -1,14 +1,13 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Icon from '../../components/Icon.astro';
-import { fetchGithubStats } from '../../lib/github';
+import { fetchGithubStats, attachRepoDescriptions } from '../../lib/github';
 
 const lang = 'tr' as const;
 
 const stats = await fetchGithubStats();
-const repos = stats.repos
-  .filter((r) => !r.fork)
-  .sort((a, b) => b.stargazers_count - a.stargazers_count);
+const nonForkRepos = stats.repos.filter((r) => !r.fork).sort((a, b) => b.stargazers_count - a.stargazers_count);
+const repos = await attachRepoDescriptions(nonForkRepos, lang);
 ---
 
 <Layout title="Projeler — Kehribar" lang={lang} activePage="projects">
@@ -21,21 +20,24 @@ const repos = stats.repos
         <p class="empty-state">İçerik bulunamadı.</p>
     ) : (
         <div class="ledger">
-            {repos.map((repo) => (
-                <a href={repo.html_url} target="_blank" rel="noopener noreferrer" class="ledger-row">
-                    <span class="idx">{repo.language ?? '—'}</span>
-                    <div class="body">
-                        <div class="title">
-                            {repo.name}
-                            <Icon name="arrow-left" class="icon arrow" style="transform:rotate(180deg);" />
+            {repos.map((repo) => {
+                const desc = repo.customDesc || repo.description;
+                return (
+                    <a href={repo.html_url} target="_blank" rel="noopener noreferrer" class="ledger-row">
+                        <span class="idx">{repo.language ?? '—'}</span>
+                        <div class="body">
+                            <div class="title">
+                                {repo.name}
+                                <Icon name="arrow-left" class="icon arrow" style="transform:rotate(180deg);" />
+                            </div>
+                            {desc && <div class="desc">{desc}</div>}
                         </div>
-                        {repo.description && <div class="desc">{repo.description}</div>}
-                    </div>
-                    {repo.stargazers_count > 0 && (
-                        <span class="meta"><Icon name="star" class="icon" style="color:var(--amber);" /> {repo.stargazers_count}</span>
-                    )}
-                </a>
-            ))}
+                        {repo.stargazers_count > 0 && (
+                            <span class="meta"><Icon name="star" class="icon" style="color:var(--amber);" /> {repo.stargazers_count}</span>
+                        )}
+                    </a>
+                );
+            })}
         </div>
     )}
 </Layout>

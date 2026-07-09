@@ -1,7 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Icon from '../../components/Icon.astro';
-import { fetchGithubStats, fetchMostActiveRepo } from '../../lib/github';
+import { fetchGithubStats, fetchMostActiveRepo, attachRepoDescriptions } from '../../lib/github';
 import { loadNow, nowText } from '../../lib/now';
 import { loadContributions } from '../../lib/contributions';
 import { getCollection } from 'astro:content';
@@ -28,10 +28,13 @@ const posts = blogAll
     .sort((a, b) => (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0));
 const recentPosts = posts.slice(0, 3);
 
-const featuredRepos = stats.repos
-    .filter((r) => !r.fork)
-    .sort((a, b) => b.stargazers_count - a.stargazers_count)
-    .slice(0, 4);
+const featuredRepos = await attachRepoDescriptions(
+    stats.repos
+        .filter((r) => !r.fork)
+        .sort((a, b) => b.stargazers_count - a.stargazers_count)
+        .slice(0, 4),
+    lang,
+);
 
 const recentContributions = contributions.slice(0, 3);
 
@@ -118,7 +121,7 @@ const nixCode = `{
                                 <span class="fc-star"><Icon name="star" class="icon" /> {repo.stargazers_count}</span>
                             )}
                         </div>
-                        {repo.description && <p class="fc-desc">{repo.description}</p>}
+                        {(repo.customDesc || repo.description) && <p class="fc-desc">{repo.customDesc || repo.description}</p>}
                         {repo.language && <span class="fc-lang">{repo.language}</span>}
                     </a>
                 ))}

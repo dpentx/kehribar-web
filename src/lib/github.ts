@@ -24,6 +24,7 @@ export interface GithubStats {
     stargazers_count: number;
     language: string | null;
     fork: boolean;
+    default_branch: string;
   }>;
 }
 
@@ -122,4 +123,45 @@ export async function fetchGithubStats(): Promise<GithubStats> {
     console.warn('[github] build-time fetch threw — using fallback:', err);
     return FALLBACK;
   }
+}
+
+// Restores a feature from the pre-Astro site: any repo can carry its own
+// desc/tr.md and desc/en.md at its root, which — when present — override
+// GitHub's generic repo `description` field on the /projects page. This
+// hits raw.githubusercontent.com (a CDN, not the api.github.com rate-limit
+// bucket), and a 404 there is the normal/expected case for repos that don't
+// have one — it just means "use the plain GitHub description instead."
+async function fetchRepoDesc(fullName: string, defaultBranch: string, lang: string): Promise<string | null> {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    const res = await fetch(
+      `https://raw.githubusercontent.com/${fullName}/${defaultBranch}/desc/${lang}.md`,
+      { signal: controller.signal },
+    );
+    clearTimeout(timeout);
+    if (!res.ok) return null; // no desc/{lang}.md in this repo — perfectly normal
+    const text = await res.text();
+    return text.trim() || null;
+  } catch {
+    return null; // network hiccup or timeout — fall back silently, never break the build
+  }
+}
+
+export type RepoWithDesc = GithubStats['repos'][number] & { customDesc: string | null };
+
+// Attaches each non-fork repo's desc/{lang}.md (if it has one) alongside the
+// regular GitHub description. Call this from a page that needs it (like
+// /projects) — fetchGithubStats() itself stays desc-agnostic since most
+// pages (home, etc.) don't need per-repo descriptions at all.
+export async function attachRepoDescriptions(
+  repos: GithubStats['repos'],
+  lang: string,
+): Promise<RepoWithDesc[]> {
+  return Promise.all(
+    repos.map(async (repo) => ({
+      ...repo,
+      customDesc: await fetchRepoDesc(`${GITHUB_USERNAME}/${repo.name}`, repo.default_branch || 'main', lang),
+    })),
+  );
 }
