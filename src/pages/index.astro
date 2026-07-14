@@ -56,6 +56,8 @@ const nixCode = `{
         ) : (
             <p class="now-line"><span class="amber">▸ şu an:</span> {nowText(now, lang)}</p>
         )}
+        <p class="now-line"><span class="amber">▸ şu an dinliyor:</span></p>
+        <img src="/api/lastfm" alt="last.fm now playing" class="lastfm-card" width="380" height="80" loading="lazy" />
         <div class="nix-block" set:html={nixCode}></div>
     </div>
 
