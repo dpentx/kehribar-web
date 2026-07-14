@@ -40,7 +40,8 @@
     --radius: 8px;
 }
 
-body.true-black {
+body.true-black,
+html.true-black {
     --bg: #000000;
     --bg-raised: #0b0906;
     --bg-rail: #000000;
