@@ -228,6 +228,16 @@ main { min-width: 0; }
 }
 .now-repo:hover { color: var(--amber); text-decoration-color: var(--amber); }
 
+.lastfm-card {
+    display: block;
+    max-width: 380px;
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    border: 1px solid var(--rule);
+    margin-bottom: 1.8rem;
+}
+
 .nix-block {
     font-family: var(--mono);
     font-size: 0.85rem;
