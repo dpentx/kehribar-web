@@ -39,12 +39,49 @@ const railLabels = {
 <!DOCTYPE html>
 <html lang={lang}>
 <head>
+    <script is:inline>
+        // Runs synchronously, before first paint, so there's no flash of the
+        // "wrong" theme or language.
+        (function () {
+            // ---- theme: default to true-black when the OS/Android theme
+            // is dark and the person hasn't chosen a preference yet ----
+            try {
+                var savedTheme = localStorage.getItem('trueBlack');
+                var wantsTrueBlack = savedTheme === '1' ||
+                    (savedTheme === null && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                if (wantsTrueBlack) document.documentElement.classList.add('true-black');
+            } catch (_) {}
+
+            // ---- language: redirect to /en on first visit if the
+            // phone/browser language isn't Turkish. Only ever runs once —
+            // after that, `preferredLanguage` is set and this is a no-op. ----
+            try {
+                var pref = localStorage.getItem('preferredLanguage');
+                if (!pref) {
+                    var path = location.pathname;
+                    var isEnglish = path === '/en' || path.indexOf('/en/') === 0;
+                    var browserLang = (navigator.language || navigator.userLanguage || 'tr').toLowerCase();
+                    var wantsEnglish = browserLang.indexOf('tr') !== 0;
+                    if (wantsEnglish && !isEnglish) {
+                        var target = path === '/' ? '/en' : '/en' + path;
+                        localStorage.setItem('preferredLanguage', 'en');
+                        location.replace(target + location.search + location.hash);
+                    } else {
+                        // Nothing to redirect (already correct, or Turkish
+                        // preferred) — still remember it so we never check again.
+                        localStorage.setItem('preferredLanguage', wantsEnglish ? 'en' : 'tr');
+                    }
+                }
+            } catch (_) {}
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{title}</title>
     <meta name="description" content={description}>
     <link rel="icon" href="https://github.com/dpentx.png?size=64" type="image/png">
     <link rel="alternate" type="application/rss+xml" title="Kehribar Blog" href={rssUrl}>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://avatars.githubusercontent.com" crossorigin>
@@ -227,15 +264,15 @@ const railLabels = {
         // ---------- theme + lang preference (event delegation, attached
         // once on `document` — safe across every View Transitions swap) ----------
         (function () {
-            const savedTheme = localStorage.getItem('trueBlack');
-            if (savedTheme === '1') document.body.classList.add('true-black');
+            // The class is already set on <html> by the blocking head
+            // script (before first paint); nothing to do here on init.
 
             document.addEventListener('click', (e) => {
                 const target = e.target;
                 const themeBtn = target.closest('#theme-toggle');
                 if (themeBtn) {
-                    document.body.classList.toggle('true-black');
-                    localStorage.setItem('trueBlack', document.body.classList.contains('true-black') ? '1' : '0');
+                    document.documentElement.classList.toggle('true-black');
+                    localStorage.setItem('trueBlack', document.documentElement.classList.contains('true-black') ? '1' : '0');
                     return;
                 }
                 const langLink = target.closest('[data-lang-link]');
@@ -246,7 +283,7 @@ const railLabels = {
             });
 
             document.addEventListener('astro:after-swap', () => {
-                if (localStorage.getItem('trueBlack') === '1') document.body.classList.add('true-black');
+                if (localStorage.getItem('trueBlack') === '1') document.documentElement.classList.add('true-black');
             });
         })();
 
