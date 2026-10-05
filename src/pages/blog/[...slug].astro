@@ -1,6 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import Icon from '../../components/Icon.astro';
+import UiIcon from '../../components/UiIcon.astro';
 import { getCollection, render } from 'astro:content';
 import { translations, langPath } from '../../lib/i18n';
 
@@ -21,13 +21,11 @@ const title = post.data.title ?? post.id.split('/').pop()?.replace(/\.md$/, '') 
 ---
 
 <Layout title={`${title} - Kehribar`} description={post.data.description} lang={lang} activePage="blog">
-    <section>
-        <a href={langPath(lang, '/blog')} class="back-link">
-            <Icon name="arrow-left" class="icon" /> {dict['back']}
-        </a>
-        <div class="markdown-content">
-            <h1>{title}</h1>
-            <Content />
-        </div>
-    </section>
+    <a href={langPath(lang, '/blog')} class="back">
+        <UiIcon name="back" />{dict['back']}
+    </a>
+    <article class="markdown-content">
+        <h1>{title}</h1>
+        <Content />
+    </article>
 </Layout>
