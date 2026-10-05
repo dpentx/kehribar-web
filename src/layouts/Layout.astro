@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
-import Icon from '../components/Icon.astro';
+import UiIcon from '../components/UiIcon.astro';
 import { NAV_ITEMS, translations, langPath, type Lang } from '../lib/i18n';
 
 interface Props {
@@ -21,6 +21,20 @@ const {
 const avatarUrl = 'https://github.com/dpentx.png?size=200'; // stable, doesn't depend on any build-time API call succeeding
 
 const dict = translations[lang];
+
+// Alt çubuk / sol ray için One UI çizgi ikonları (NAV_ITEMS'taki FA adlarının yerine).
+const NAV_UI_ICON: Record<string, 'home' | 'article' | 'terminal' | 'layers' | 'merge' | 'mail'> = {
+    home: 'home',
+    blog: 'article',
+    nixzone: 'terminal',
+    projects: 'layers',
+    contributions: 'merge',
+    contact: 'mail',
+};
+const themeLabels = {
+    tr: { toDark: 'Koyu temaya geç', toLight: 'Açık temaya geç' },
+    en: { toDark: 'Switch to dark theme', toLight: 'Switch to light theme' },
+};
 const currentNavItem = NAV_ITEMS.find((i) => i.page === activePage) ?? NAV_ITEMS[0];
 const trHref = langPath('tr', currentNavItem.href);
 const enHref = langPath('en', currentNavItem.href);
@@ -43,13 +57,14 @@ const railLabels = {
         // Runs synchronously, before first paint, so there's no flash of the
         // "wrong" theme or language.
         (function () {
-            // ---- theme: default to true-black when the OS/Android theme
-            // is dark and the person hasn't chosen a preference yet ----
+            // ---- theme: sistem temasını izler; kullanıcı seçtiyse data-theme
+            // ile zorlanır. Eski 'trueBlack' tercihi koyu temaya taşınır. ----
             try {
-                var savedTheme = localStorage.getItem('trueBlack');
-                var wantsTrueBlack = savedTheme === '1' ||
-                    (savedTheme === null && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-                if (wantsTrueBlack) document.documentElement.classList.add('true-black');
+                var savedTheme = localStorage.getItem('theme');
+                if (savedTheme !== 'light' && savedTheme !== 'dark') {
+                    savedTheme = localStorage.getItem('trueBlack') === '1' ? 'dark' : null;
+                }
+                if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
             } catch (_) {}
 
             // ---- language: redirect to /en on first visit if the
@@ -76,7 +91,9 @@ const railLabels = {
         })();
     </script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#F4F4F6" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
     <title>{title}</title>
     <meta name="description" content={description}>
     <link rel="icon" href="https://github.com/dpentx.png?size=64" type="image/png">
@@ -89,63 +106,58 @@ const railLabels = {
     <link
         rel="preload"
         as="style"
-        href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
         onload="this.onload=null;this.rel='stylesheet'"
     >
     <noscript>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
     </noscript>
     <ClientRouter />
     <!-- No Tailwind, no Font Awesome CDN: icons are inlined SVG (see
-         src/components/Icon.astro), custom CSS only. -->
+         src/components/Icon.astro and UiIcon.astro), custom CSS only. -->
 </head>
 <body>
-    <div class="lang-switcher" transition:persist="lang-switcher">
-        <a href={rssUrl} class="lang-btn" id="rss-link" title="RSS" aria-label="RSS feed">
-            <Icon name="rss" class="icon" />
-        </a>
-        <a class:list={["lang-btn", { active: lang === 'tr' }]} href={trHref} id="lang-tr-link" data-lang-link="tr">TR</a>
-        <a class:list={["lang-btn", { active: lang === 'en' }]} href={enHref} id="lang-en-link" data-lang-link="en">EN</a>
-    </div>
+    <a class="skip" href="#main">{lang === 'en' ? 'Skip to content' : 'İçeriğe geç'}</a>
+
+    <nav class="nav" id="rail-nav" aria-label="Ana navigasyon" transition:persist="nav">
+        {NAV_ITEMS.map((item) => (
+            <a
+                class:list={["nav-item", { active: activePage === item.page }]}
+                aria-current={activePage === item.page ? 'page' : undefined}
+                href={langPath(lang, item.href)}
+                data-page={item.page}
+                data-href={item.href}
+            >
+                <span class="nav-ind"><UiIcon name={NAV_UI_ICON[item.page]} /></span>
+                <span class="label">{dict[item.key]}</span>
+            </a>
+        ))}
+    </nav>
 
     <div class="shell">
-        <aside class="rail" transition:persist="rail">
-            <div class="rail-id">
-                <img class="avatar" src={avatarUrl} alt="Avatar" loading="eager" width="56" height="56">
-                <div>
-                    <div class="rail-name">Kehribar</div>
-                    <div class="rail-handle">@dpentx</div>
-                </div>
+        <header class="appbar" id="appbar" transition:persist="appbar">
+            <a class="appbar-home" href={langPath(lang, '/')} id="appbar-home" aria-label="Kehribar">
+                <img class="avatar" src={avatarUrl} alt="" loading="eager" width="36" height="36">
+                <div class="appbar-title">Kehribar<small>@dpentx</small></div>
+            </a>
+            <div class="appbar-spacer"></div>
+            <a href={rssUrl} class="icon-btn hide-sm" id="rss-link" title="RSS" aria-label="RSS feed">
+                <UiIcon name="rss" />
+            </a>
+            <button class="icon-btn" id="cmdk-trigger" type="button" aria-label={dict['cmdk-placeholder']}>
+                <UiIcon name="search" />
+            </button>
+            <div class="seg" role="group" aria-label="Language">
+                <a class:list={["seg-btn", { active: lang === 'tr' }]} href={trHref} id="lang-tr-link" data-lang-link="tr" hreflang="tr">TR</a>
+                <a class:list={["seg-btn", { active: lang === 'en' }]} href={enHref} id="lang-en-link" data-lang-link="en" hreflang="en">EN</a>
             </div>
+            <button class="icon-btn" id="theme-toggle" type="button" aria-label={themeLabels[lang].toDark}>
+                <UiIcon name="moon" class="theme-moon" />
+                <UiIcon name="sun" class="theme-sun" hidden />
+            </button>
+        </header>
 
-            <nav class="rail-nav" id="rail-nav" aria-label="Ana navigasyon">
-                {NAV_ITEMS.map((item) => (
-                    <a
-                        class:list={["rail-link", { active: activePage === item.page }]}
-                        href={langPath(lang, item.href)}
-                        data-page={item.page}
-                        data-href={item.href}
-                    >
-                        <span class="dot">·</span>
-                        <Icon name={item.icon} class="icon" />
-                        <span class="label">{dict[item.key]}</span>
-                    </a>
-                ))}
-            </nav>
-
-            <div class="rail-tools">
-                <button class="rail-btn" id="cmdk-trigger" aria-label={dict['cmdk-placeholder']}>
-                    <Icon name="magnifying-glass" class="icon" />
-                    <span>/</span>
-                </button>
-                <button class="rail-btn" id="theme-toggle" aria-label="True Black">
-                    <Icon name="circle-half-stroke" class="icon" />
-                    <span>{dict['theme-label']}</span>
-                </button>
-            </div>
-        </aside>
-
-        <main>
+        <main id="main">
             <slot />
         </main>
     </div>
@@ -191,7 +203,7 @@ const railLabels = {
         <div class="kaiden-caption">🐾 Kaiden Break! Biraz mola ver 🐾</div>
     </div>
 
-    <script define:vars={{ railLabels }}>
+    <script define:vars={{ railLabels, themeLabels }}>
         // IMPORTANT: this script tag is NOT guaranteed to re-execute on
         // every soft navigation — if you return to a page whose script
         // content is byte-identical to one already run, the browser/router
@@ -202,6 +214,34 @@ const railLabels = {
         // run ONCE (attaching a `document`-level listener) goes behind the
         // window.__kehribarInit guard below instead.
         window.__kehribarRailLabels = railLabels;
+        window.__kehribarThemeLabels = themeLabels;
+
+        // ---- tema: simge + erişilebilir etiket, geçerli temaya göre ----
+        function kehribarIsDark() {
+            const t = document.documentElement.getAttribute('data-theme');
+            if (t) return t === 'dark';
+            return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        }
+        function kehribarPaintTheme() {
+            const lang = document.documentElement.lang === 'en' ? 'en' : 'tr';
+            const dark = kehribarIsDark();
+            const btn = document.getElementById('theme-toggle');
+            if (!btn) return;
+            const labels = window.__kehribarThemeLabels[lang];
+            btn.setAttribute('aria-label', dark ? labels.toLight : labels.toDark);
+            const moon = btn.querySelector('.theme-moon');
+            const sun = btn.querySelector('.theme-sun');
+            if (moon) moon.hidden = dark;
+            if (sun) sun.hidden = !dark;
+        }
+
+        // ---- app bar: büyük başlık alanından kompakt çubuğa geçiş ----
+        function kehribarAppbar() {
+            const bar = document.getElementById('appbar');
+            if (!bar) return;
+            const p = Math.min(1, Math.max(0, (window.scrollY - 24) / 72));
+            bar.style.setProperty('--p', p.toFixed(3));
+        }
 
         // Keep the persisted rail (and lang-switcher) in sync with the
         // current page after every navigation. Both persist their DOM
@@ -221,7 +261,7 @@ const railLabels = {
             const labels = window.__kehribarRailLabels[lang];
             const path = location.pathname;
 
-            document.querySelectorAll('.rail-link').forEach((el) => {
+            document.querySelectorAll('.nav-item').forEach((el) => {
                 const baseHref = el.dataset.href; // lang-agnostic, e.g. "/blog" or "/"
                 const label = labels.nav.find((n) => n.page === el.dataset.page);
                 const span = el.querySelector('.label');
@@ -233,6 +273,7 @@ const railLabels = {
                 const isHome = baseHref === '/';
                 const active = isHome ? path === newHref : (path === newHref || path.startsWith(newHref + '/'));
                 el.classList.toggle('active', active);
+                if (active) el.setAttribute('aria-current', 'page'); else el.removeAttribute('aria-current');
             });
 
             const railNav = document.getElementById('rail-nav');
@@ -249,12 +290,19 @@ const railLabels = {
             const trLink = document.getElementById('lang-tr-link');
             const enLink = document.getElementById('lang-en-link');
             const rssLink = document.getElementById('rss-link');
+            const homeLink = document.getElementById('appbar-home');
+            if (homeLink) homeLink.setAttribute('href', kehribarLangPath(lang, '/'));
             if (trLink) { trLink.setAttribute('href', basePath); trLink.classList.toggle('active', lang === 'tr'); }
             if (enLink) { enLink.setAttribute('href', kehribarLangPath('en', basePath)); enLink.classList.toggle('active', lang === 'en'); }
             if (rssLink) rssLink.setAttribute('href', kehribarLangPath(lang, '/rss.xml'));
         }
-        kehribarSyncRail();
-        document.addEventListener('astro:page-load', kehribarSyncRail);
+        function kehribarOnPage() {
+            kehribarSyncRail();
+            kehribarPaintTheme();
+            kehribarAppbar();
+        }
+        kehribarOnPage();
+        document.addEventListener('astro:page-load', kehribarOnPage);
 
         if (window.__kehribarInit) {
             // Global listeners already attached on a previous page load —
@@ -264,15 +312,17 @@ const railLabels = {
         // ---------- theme + lang preference (event delegation, attached
         // once on `document` — safe across every View Transitions swap) ----------
         (function () {
-            // The class is already set on <html> by the blocking head
-            // script (before first paint); nothing to do here on init.
+            // The theme attribute is already set on <html> by the blocking
+            // head script (before first paint); nothing to do here on init.
 
             document.addEventListener('click', (e) => {
                 const target = e.target;
                 const themeBtn = target.closest('#theme-toggle');
                 if (themeBtn) {
-                    document.documentElement.classList.toggle('true-black');
-                    localStorage.setItem('trueBlack', document.documentElement.classList.contains('true-black') ? '1' : '0');
+                    const next = kehribarIsDark() ? 'light' : 'dark';
+                    document.documentElement.setAttribute('data-theme', next);
+                    try { localStorage.setItem('theme', next); } catch (_) {}
+                    kehribarPaintTheme();
                     return;
                 }
                 const langLink = target.closest('[data-lang-link]');
@@ -283,8 +333,18 @@ const railLabels = {
             });
 
             document.addEventListener('astro:after-swap', () => {
-                if (localStorage.getItem('trueBlack') === '1') document.documentElement.classList.add('true-black');
+                try {
+                    const saved = localStorage.getItem('theme');
+                    if (saved === 'light' || saved === 'dark') document.documentElement.setAttribute('data-theme', saved);
+                } catch (_) {}
             });
+
+            let ticking = false;
+            window.addEventListener('scroll', () => {
+                if (ticking) return;
+                ticking = true;
+                requestAnimationFrame(() => { kehribarAppbar(); ticking = false; });
+            }, { passive: true });
         })();
 
         // ---------- command palette ----------
