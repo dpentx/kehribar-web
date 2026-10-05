@@ -1,36 +1,43 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Icon from '../../components/Icon.astro';
+import UiIcon from '../../components/UiIcon.astro';
 
 const lang = 'tr' as const;
 ---
 
 <Layout title="İletişim — Kehribar" lang={lang} activePage="contact">
-    <div class="hero">
-        <span class="eyebrow">reach</span>
+    <section class="viewing compact">
         <h1>İletişim</h1>
         <p class="bio">Benimle iletişime geçmek için aşağıdaki platformları kullanabilirsin.</p>
-    </div>
+    </section>
 
-    <div class="contact-grid">
-        <a href="https://github.com/dpentx" target="_blank" rel="noopener noreferrer" class="contact-row">
-            <Icon name="github" class="icon" />
-            <div>
-                <div class="name">GitHub</div>
-                <div class="desc">Açık kaynak projelerim ve katkılarım</div>
-            </div>
-        </a>
-        <a href="https://myanimelist.net/profile/dpenx" target="_blank" rel="noopener noreferrer" class="contact-row">
-            <Icon name="book" class="icon" />
-            <div>
-                <div class="name">MyAnimeList</div>
-                <div class="desc">Anime izleme listem ve değerlendirmelerim</div>
-            </div>
-        </a>
-    </div>
+    <div class="section first">
+        <div class="group">
+            <a href="https://github.com/dpentx" target="_blank" rel="noopener noreferrer" class="row lead">
+                <span class="tile"><Icon name="github" class="icon" /></span>
+                <div>
+                    <div class="row-title">GitHub</div>
+                    <div class="row-desc">Açık kaynak projelerim ve katkılarım</div>
+                </div>
+                <UiIcon name="chev" class="chev" />
+            </a>
+            <a href="https://myanimelist.net/profile/dpenx" target="_blank" rel="noopener noreferrer" class="row lead">
+                <span class="tile"><Icon name="book" class="icon" /></span>
+                <div>
+                    <div class="row-title">MyAnimeList</div>
+                    <div class="row-desc">Anime izleme listem ve değerlendirmelerim</div>
+                </div>
+                <UiIcon name="chev" class="chev" />
+            </a>
+        </div>
 
-    <div class="note-block">
-        <div class="head"><Icon name="handshake" class="icon" /> Açık kaynak katkıları</div>
-        <p>Açık kaynak projelere katkı yapmaktan ve işbirliği yapmaktan mutluluk duyuyorum. GitHub üzerinden benimle iletişime geçebilir, projelerime katkı sağlayabilirsin.</p>
+        <div class="callout">
+            <Icon name="handshake" class="icon" />
+            <div>
+                <strong>Açık kaynak katkıları</strong>
+                <p>Açık kaynak projelere katkı yapmaktan ve işbirliği yapmaktan mutluluk duyuyorum. GitHub üzerinden benimle iletişime geçebilir, projelerime katkı sağlayabilirsin.</p>
+            </div>
+        </div>
     </div>
 </Layout>

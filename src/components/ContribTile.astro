@@ -1,0 +1,29 @@
+---
+import UiIcon from './UiIcon.astro';
+
+interface Props {
+  icon?: string;
+  name: string;
+}
+const { icon, name } = Astro.props;
+---
+
+<span class="tile">
+  {icon ? (
+    <>
+      <img
+        class="tile-img"
+        loading="lazy"
+        decoding="async"
+        width="32"
+        height="32"
+        src={`/${icon}`}
+        alt={name}
+        onerror="this.hidden=true;this.nextElementSibling.hidden=false"
+      />
+      <UiIcon name="puzzle" hidden />
+    </>
+  ) : (
+    <UiIcon name="puzzle" />
+  )}
+</span>
