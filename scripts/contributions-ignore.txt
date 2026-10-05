@@ -1,0 +1,3 @@
+# Katkılar botunun listeye eklememesi gereken projeler.
+# Her satıra bir "owner/repo" yaz. Örnek:
+# some-org/some-repo
