@@ -1,8 +1,9 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import Icon from '../../components/Icon.astro';
+import UiIcon from '../../components/UiIcon.astro';
 import { getCollection } from 'astro:content';
 import { langPath } from '../../lib/i18n';
+import { fmtDate } from '../../lib/ui';
 
 const lang = 'tr' as const;
 
@@ -19,49 +20,62 @@ const posts = allPosts
 ---
 
 <Layout title="Blog — Kehribar" lang={lang} activePage="blog">
-    <div class="section-head">
-        <h2>blog</h2>
-        <span class="count">{posts.length}</span>
-    </div>
-
-    <div class="search-box" id="blog-search-box">
-        <Icon name="magnifying-glass" class="icon search-icon" />
-        <input type="text" id="blog-search" placeholder="Yazı ara...">
-        <button class="search-clear" id="blog-search-clear" aria-label="clear"><Icon name="xmark" class="icon" /></button>
-    </div>
-
-    {posts.length === 0 ? (
-        <p class="empty-state">Henüz blog yazısı yok — yakında gelecek.</p>
-    ) : (
-        <div class="ledger" id="blog-list">
-            {posts.map((post) => (
-                <a href={langPath(lang, `/blog/${post.slug}`)} class="ledger-row" data-search={post.title.toLowerCase()}>
-                    <span class="idx">{post.date ? post.date.toISOString().slice(0, 10) : '—'}</span>
-                    <div class="body">
-                        <div class="title">{post.title} <Icon name="arrow-left" class="icon arrow" style="transform:rotate(180deg);" /></div>
-                        {post.description && <div class="desc">{post.description}</div>}
-                    </div>
-                </a>
-            ))}
+    <section class="viewing compact">
+        <div class="viewing-row">
+            <h1>Blog</h1>
+            <a class="pill-link" href={langPath(lang, '/rss.xml')}>RSS<UiIcon name="rss" /></a>
         </div>
-    )}
+    </section>
+
+    <div class="section first">
+        {posts.length === 0 ? (
+            <div class="group">
+                <div class="empty-state"><span class="tile"><UiIcon name="article" /></span><p>Henüz blog yazısı yok — yakında gelecek.</p></div>
+            </div>
+        ) : (
+            <>
+                <div class="search">
+                    <UiIcon name="search" class="si" />
+                    <input type="search" id="blog-search" placeholder="Yazı ara..." aria-label="Yazı ara..." autocomplete="off">
+                    <button class="icon-btn clear" id="blog-search-clear" type="button" aria-label="clear" hidden><UiIcon name="x" /></button>
+                </div>
+                <div class="group" id="blog-list">
+                    {posts.map((post) => (
+                        <a href={langPath(lang, `/blog/${post.slug}`)} class="row" data-search={post.title.toLocaleLowerCase()}>
+                            <div>
+                                <div class="row-title">{post.title}</div>
+                                {post.description && <div class="row-desc">{post.description}</div>}
+                            </div>
+                            <div class="trail"><span>{fmtDate(post.date, lang)}</span><UiIcon name="chev" class="chev" /></div>
+                        </a>
+                    ))}
+                </div>
+                <div class="group" id="blog-no-result" hidden><div class="empty-state"><p><strong>Sonuç bulunamadı</strong><br>Başka bir kelimeyle aramayı dene.</p></div></div>
+            </>
+        )}
+    </div>
 
     <script>
         document.addEventListener('astro:page-load', () => {
             const input = document.getElementById('blog-search') as HTMLInputElement | null;
             const clearBtn = document.getElementById('blog-search-clear');
-            const items = document.querySelectorAll('#blog-list .ledger-row');
+            const noResult = document.getElementById('blog-no-result');
+            const items = document.querySelectorAll('#blog-list .row');
             if (!input) return;
 
             function applyFilter() {
-                const q = (input?.value ?? '').trim().toLowerCase();
+                const q = (input?.value ?? '').trim().toLocaleLowerCase();
+                let shown = 0;
                 items.forEach((el) => {
                     const match = (el.getAttribute('data-search') ?? '').includes(q);
-                    (el as HTMLElement).style.display = match ? '' : 'none';
+                    (el as HTMLElement).hidden = !match;
+                    if (match) shown++;
                 });
+                if (noResult) noResult.hidden = shown !== 0;
+                if (clearBtn) clearBtn.hidden = q === '';
             }
             input.addEventListener('input', applyFilter);
-            clearBtn?.addEventListener('click', () => { input.value = ''; applyFilter(); });
+            clearBtn?.addEventListener('click', () => { input.value = ''; applyFilter(); input.focus(); });
         });
     </script>
 </Layout>
