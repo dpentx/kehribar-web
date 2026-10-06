@@ -231,8 +231,9 @@ const railLabels = {
             btn.setAttribute('aria-label', dark ? labels.toLight : labels.toDark);
             const moon = btn.querySelector('.theme-moon');
             const sun = btn.querySelector('.theme-sun');
-            if (moon) moon.hidden = dark;
-            if (sun) sun.hidden = !dark;
+            // SVG öğelerinde `hidden` özelliği yok; özniteliği doğrudan aç/kapat.
+            if (moon) moon.toggleAttribute('hidden', dark);
+            if (sun) sun.toggleAttribute('hidden', !dark);
         }
 
         // ---- app bar: büyük başlık alanından kompakt çubuğa geçiş ----
