@@ -142,7 +142,7 @@ const nixCode = `{
                                 <div class="row-title">{entry._name}</div>
                                 {desc && <div class="row-desc">{desc}</div>}
                             </div>
-                            <span class="badge">TR</span>
+                            {entry.type === 'translation' ? <span class="badge">TR</span> : <span></span>}
                         </a>
                     );
                 })}
