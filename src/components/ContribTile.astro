@@ -19,7 +19,7 @@ const { icon, name } = Astro.props;
         height="32"
         src={`/${icon}`}
         alt={name}
-        onerror="this.hidden=true;this.nextElementSibling.hidden=false"
+        onerror="this.hidden=true;this.nextElementSibling.removeAttribute('hidden')"
       />
       <UiIcon name="puzzle" hidden />
     </>

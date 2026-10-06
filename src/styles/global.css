@@ -1,7 +1,7 @@
 /* ============================================================
    kehribar — One UI tasarım dili
    Büyük başlık alanı, yuvarlak köşeli gruplu listeler, hap şeklinde
-   gezinme. Açık tema sistemi izler; koyu tema saf siyahtr (AMOLED).
+   gezinme. Açık tema sistemi izler; koyu tema saf siyahtır (AMOLED).
    Tema, <html data-theme="light|dark"> ile zorlanabilir.
    ============================================================ */
 
@@ -163,12 +163,9 @@ main { min-width: 0; }
 @media (max-width: 519px) { .hide-sm { display: none; } }
 
 /* ---------- büyük başlık alanı (viewing area) ---------- */
-.viewing {
-    min-height: 32svh;
-    display: flex; flex-direction: column; justify-content: flex-end;
-    padding: 28px 0 8px;
-}
-.viewing.compact { min-height: 22svh; }
+/* Başlık her sayfada aynı yükseklikten başlar (üstten hizalı); içerik uzunluğu
+   başlığın konumunu değiştirmez. */
+.viewing { padding: clamp(40px, 11svh, 104px) 0 8px; }
 .viewing-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .viewing h1 {
     font-size: clamp(2rem, 7.4vw, 3.25rem);
@@ -225,7 +222,7 @@ a.chip.now:hover { background: var(--accent-tint-strong); }
 /* ---------- bölümler + gruplu listeler ---------- */
 .section { margin-top: 44px; }
 .section.first { margin-top: 24px; }
-.section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 6px 12px; }
+.section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 0 12px; min-height: 52px; }
 .section-head h2, .section > h2 {
     font-size: 1.375rem; font-weight: 700; letter-spacing: -0.012em; line-height: 1.2;
 }
@@ -339,7 +336,7 @@ a.row:hover .chev { transform: translateX(3px); }
     position: fixed; z-index: 30;
     left: 10px; right: 10px;
     bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-    display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 1.2fr) minmax(0, 1.65fr) minmax(0, 1.15fr);
     padding: 8px 4px;
     background: var(--surface); border-radius: 34px; box-shadow: var(--shadow-nav);
 }
@@ -349,7 +346,7 @@ a.row:hover .chev { transform: translateX(3px); }
     color: var(--ink-dim); font-size: 0.6875rem; font-weight: 600; line-height: 1.2;
 }
 .nav-item .label { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.nav-ind { width: 52px; height: 32px; border-radius: 16px; display: grid; place-items: center; transition: background-color 0.2s ease; }
+.nav-ind { width: min(52px, 100%); height: 32px; border-radius: 16px; display: grid; place-items: center; transition: background-color 0.2s ease; }
 .nav-ind .ico { width: 22px; height: 22px; }
 .nav-item:hover .nav-ind { background: color-mix(in srgb, var(--ink) 7%, transparent); }
 .nav-item.active { color: var(--ink); }
@@ -363,8 +360,6 @@ a.row:hover .chev { transform: translateX(3px); }
         padding: 0; background: transparent; box-shadow: none; border-radius: 0;
     }
     .shell { padding-bottom: 72px; }
-    .viewing { min-height: 28svh; }
-    .viewing.compact { min-height: 20svh; }
 }
 
 /* ---------- komut paleti ---------- */
