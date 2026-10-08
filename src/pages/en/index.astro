@@ -66,10 +66,7 @@ const nixCode = `{
     </div>
 
     <div class="stack">
-        <section class="widget" aria-labelledby="np-h">
-            <h2 class="widget-title" id="np-h"><UiIcon name="music" />currently listening to</h2>
-            <img src="/api/lastfm" alt="last.fm now playing" class="lastfm" width="380" height="80" loading="lazy" />
-        </section>
+        <img src="/api/lastfm?lang=en" data-card="/api/lastfm" data-lang="en" alt="last.fm" class="lastfm" width="380" height="80" />
         <div class="nix-block" set:html={nixCode}></div>
     </div>
 
@@ -161,4 +158,28 @@ const nixCode = `{
             height="35"
         >
     </footer>
+
+    <script>
+        // Kartlar <img> olarak yüklenir, bu yüzden sayfanın temasını göremezler.
+        // Sitenin (veya sistemin) temasını ve dilini adres parametresi olarak iletiriz.
+        function syncCards() {
+            const root = document.documentElement;
+            const forced = root.getAttribute('data-theme');
+            const dark = forced ? forced === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+            document.querySelectorAll<HTMLImageElement>('img[data-card]').forEach((img) => {
+                const url = new URL(img.dataset.card!, location.origin);
+                if (img.dataset.lang) url.searchParams.set('lang', img.dataset.lang);
+                url.searchParams.set('theme', dark ? 'dark' : 'light');
+                const next = url.pathname + url.search;
+                if (img.getAttribute('src') !== next) img.setAttribute('src', next);
+            });
+        }
+        document.addEventListener('astro:page-load', syncCards);
+        const w = window as unknown as { __cardThemeWatch?: boolean };
+        if (!w.__cardThemeWatch) {
+            w.__cardThemeWatch = true;
+            new MutationObserver(syncCards).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', syncCards);
+        }
+    </script>
 </Layout>
