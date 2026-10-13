@@ -1,7 +1,8 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import Icon from '../../components/Icon.astro';
+import UiIcon from '../../components/UiIcon.astro';
 import { fetchGithubStats, attachRepoDescriptions } from '../../lib/github';
+import { langColor } from '../../lib/ui';
 
 const lang = 'tr' as const;
 
@@ -11,33 +12,33 @@ const repos = await attachRepoDescriptions(nonForkRepos, lang);
 ---
 
 <Layout title="Projeler — Kehribar" lang={lang} activePage="projects">
-    <div class="section-head">
-        <h2>projeler</h2>
-        <span class="count">{repos.length}</span>
-    </div>
+    <section class="viewing compact">
+        <h1>Projeler</h1>
+    </section>
 
-    {repos.length === 0 ? (
-        <p class="empty-state">İçerik bulunamadı.</p>
-    ) : (
-        <div class="ledger">
-            {repos.map((repo) => {
-                const desc = repo.customDesc || repo.description;
-                return (
-                    <a href={repo.html_url} target="_blank" rel="noopener noreferrer" class="ledger-row">
-                        <span class="idx">{repo.language ?? '—'}</span>
-                        <div class="body">
-                            <div class="title">
-                                {repo.name}
-                                <Icon name="arrow-left" class="icon arrow" style="transform:rotate(180deg);" />
+    <div class="section first">
+        {repos.length === 0 ? (
+            <div class="group">
+                <div class="empty-state"><span class="tile"><UiIcon name="layers" /></span><p>İçerik bulunamadı.</p></div>
+            </div>
+        ) : (
+            <div class="group">
+                {repos.map((repo) => {
+                    const desc = repo.customDesc || repo.description;
+                    return (
+                        <a href={repo.html_url} target="_blank" rel="noopener noreferrer" class="row">
+                            <div>
+                                <div class="row-title">{repo.name}</div>
+                                {desc && <div class="row-desc">{desc}</div>}
                             </div>
-                            {desc && <div class="desc">{desc}</div>}
-                        </div>
-                        {repo.stargazers_count > 0 && (
-                            <span class="meta"><Icon name="star" class="icon" style="color:var(--amber);" /> {repo.stargazers_count}</span>
-                        )}
-                    </a>
-                );
-            })}
-        </div>
-    )}
+                            <div class="trail">
+                                {repo.language && <span class="lang"><i style={`--c:${langColor(repo.language)}`}></i>{repo.language}</span>}
+                                {repo.stargazers_count > 0 && <span class="stars"><UiIcon name="star" /><span>{repo.stargazers_count}</span></span>}
+                            </div>
+                        </a>
+                    );
+                })}
+            </div>
+        )}
+    </div>
 </Layout>

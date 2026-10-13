@@ -1,8 +1,9 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
-import Icon from '../../../components/Icon.astro';
+import UiIcon from '../../../components/UiIcon.astro';
 import { getCollection } from 'astro:content';
 import { langPath } from '../../../lib/i18n';
+import { fmtDate } from '../../../lib/ui';
 
 const lang = 'en' as const;
 
@@ -18,54 +19,63 @@ const posts = allPosts
 ---
 
 <Layout title="NixZONE — Kehribar" lang={lang} activePage="nixzone">
-    <div class="hero">
-        <span class="eyebrow">/etc/nixos</span>
+    <section class="viewing compact">
         <h1>NixZONE</h1>
         <p class="bio">Setup details, desktop rices, and configuration notes.</p>
-    </div>
+    </section>
 
-    <div class="section-head">
-        <h2>posts</h2>
-        <span class="count">{posts.length}</span>
-    </div>
-
-    <div class="search-box" id="nix-search-box">
-        <Icon name="magnifying-glass" class="icon search-icon" />
-        <input type="text" id="nix-search" placeholder="Search posts...">
-        <button class="search-clear" id="nix-search-clear" aria-label="clear"><Icon name="xmark" class="icon" /></button>
-    </div>
-
-    {posts.length === 0 ? (
-        <p class="empty-state">No posts yet — coming soon.</p>
-    ) : (
-        <div class="ledger" id="nixzone-list">
-            {posts.map((post) => (
-                <a href={langPath(lang, `/nixzone/${post.slug}`)} class="ledger-row" data-search={post.title.toLowerCase()}>
-                    <span class="idx">{post.date ? post.date.toISOString().slice(0, 10) : '—'}</span>
-                    <div class="body">
-                        <div class="title">{post.title} <Icon name="arrow-left" class="icon arrow" style="transform:rotate(180deg);" /></div>
-                    </div>
-                </a>
-            ))}
+    <section class="section first">
+        <div class="section-head">
+            <h2>posts</h2>
         </div>
-    )}
+
+        {posts.length === 0 ? (
+            <div class="group">
+                <div class="empty-state"><span class="tile"><UiIcon name="terminal" /></span><p>No posts yet — coming soon.</p></div>
+            </div>
+        ) : (
+            <>
+                <div class="search">
+                    <UiIcon name="search" class="si" />
+                    <input type="search" id="nix-search" placeholder="Search posts..." aria-label="Search posts..." autocomplete="off">
+                    <button class="icon-btn clear" id="nix-search-clear" type="button" aria-label="clear" hidden><UiIcon name="x" /></button>
+                </div>
+                <div class="group" id="nixzone-list">
+                    {posts.map((post) => (
+                        <a href={langPath(lang, `/nixzone/${post.slug}`)} class="row" data-search={post.title.toLocaleLowerCase()}>
+                            <div>
+                                <div class="row-title">{post.title}</div>
+                            </div>
+                            <div class="trail"><span>{fmtDate(post.date, lang)}</span><UiIcon name="chev" class="chev" /></div>
+                        </a>
+                    ))}
+                </div>
+                <div class="group" id="nix-no-result" hidden><div class="empty-state"><p><strong>No results</strong><br>Try a different search term.</p></div></div>
+            </>
+        )}
+    </section>
 
     <script>
         document.addEventListener('astro:page-load', () => {
             const input = document.getElementById('nix-search') as HTMLInputElement | null;
             const clearBtn = document.getElementById('nix-search-clear');
-            const items = document.querySelectorAll('#nixzone-list .ledger-row');
+            const noResult = document.getElementById('nix-no-result');
+            const items = document.querySelectorAll('#nixzone-list .row');
             if (!input) return;
 
             function applyFilter() {
-                const q = (input?.value ?? '').trim().toLowerCase();
+                const q = (input?.value ?? '').trim().toLocaleLowerCase();
+                let shown = 0;
                 items.forEach((el) => {
                     const match = (el.getAttribute('data-search') ?? '').includes(q);
-                    (el as HTMLElement).style.display = match ? '' : 'none';
+                    (el as HTMLElement).hidden = !match;
+                    if (match) shown++;
                 });
+                if (noResult) noResult.hidden = shown !== 0;
+                if (clearBtn) clearBtn.hidden = q === '';
             }
             input.addEventListener('input', applyFilter);
-            clearBtn?.addEventListener('click', () => { input.value = ''; applyFilter(); });
+            clearBtn?.addEventListener('click', () => { input.value = ''; applyFilter(); input.focus(); });
         });
     </script>
 </Layout>
