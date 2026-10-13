@@ -189,7 +189,7 @@ export async function fetchImage(url) {
 }
 
 // ---------- SVG ----------
-const FONT = "system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
+export const FONT = "system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
 
 function palCss(p) {
   const h = toHex;
@@ -199,14 +199,14 @@ function palCss(p) {
   };
 }
 
-function styleBlock(palettes, mode) {
+export function styleBlock(palettes, mode, extra = () => "") {
   const names = ["bg", "ink", "sub", "acc", "accText", "onAcc", "tint", "hair"];
   const classRules = (get) => `
     .bg{fill:${get("bg")}} .ink{fill:${get("ink")}} .sub{fill:${get("sub")}}
     .acc{fill:${get("acc")}} .accText{fill:${get("accText")}} .onAcc{fill:${get("onAcc")}}
     .tint{fill:${get("tint")}} .hair{stroke:${get("hair")}}
     .accStroke{stroke:${get("accText")}} .onAccStroke{stroke:${get("onAcc")}}
-    .accBarIdle{fill:${get("accText")}}`;
+    .accBarIdle{fill:${get("accText")}}${extra(get)}`;
   if (mode === "light" || mode === "dark") {
     const c = palCss(palettes[mode]);
     return classRules((n) => c[n]);
