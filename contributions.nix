@@ -41,4 +41,63 @@ F droid = {
   type = "translation";
 };
 
+# bot: keiyoushi/extensions-source — merge edilen PR #19344, #14089
+extensions-source = {
+  url = "https://github.com/keiyoushi/extensions-source";
+  icon = "icons/extensions-source.png";
+  desc_en = "Source code of extensions in https://github.com/keiyoushi/extensions";
+  type = "translation";
+};
 
+# bot: codeaeternum/extensions-source — default branch'e giren commit
+extensions-source 2 = {
+  url = "https://github.com/codeaeternum/extensions-source";
+  icon = "icons/codeaeternum-extensions-source.png";
+  desc_en = "Fork keiyoushi/extensions-source: parches iOS/Tachimanga + LectorTMOo propia";
+  type = "contribution";
+};
+
+# bot: DeusEnd-DEV/deus-ex-manga — default branch'e giren commit
+deus-ex-manga = {
+  url = "https://github.com/DeusEnd-DEV/deus-ex-manga";
+  icon = "icons/deus-ex-manga.png";
+  type = "contribution";
+};
+
+# bot: avustr-code/extensions-source — default branch'e giren commit
+extensions-source 2 = {
+  url = "https://github.com/avustr-code/extensions-source";
+  icon = "icons/avustr-code-extensions-source.png";
+  desc_en = "Source code of extensions in https://github.com/keiyoushi/extensions";
+  type = "contribution";
+};
+
+# bot: FelipeGFA/fonte-extensoes — default branch'e giren commit
+fonte-extensoes = {
+  url = "https://github.com/FelipeGFA/fonte-extensoes";
+  icon = "icons/fonte-extensoes.png";
+  desc_en = "Source code of extensions in https://github.com/keiyoushi/extensions";
+  type = "contribution";
+};
+
+# bot: DemonGodXY/ext-fork-kt — default branch'e giren commit
+ext-fork-kt = {
+  url = "https://github.com/DemonGodXY/ext-fork-kt";
+  icon = "icons/ext-fork-kt.png";
+  type = "contribution";
+};
+
+# bot: zhongflyTeam/extensions-source — default branch'e giren commit
+extensions-source 2 = {
+  url = "https://github.com/zhongflyTeam/extensions-source";
+  icon = "icons/zhongflyteam-extensions-source.png";
+  type = "contribution";
+};
+
+# bot: Awerkori/manga-fonte-extensoes — default branch'e giren commit
+manga-fonte-extensoes = {
+  url = "https://github.com/Awerkori/manga-fonte-extensoes";
+  icon = "icons/manga-fonte-extensoes.png";
+  desc_en = "Código-fonte em Kotlin e pipeline de compilação das extensões de mangá do Project Nox para Mihon e forks.";
+  type = "contribution";
+};
