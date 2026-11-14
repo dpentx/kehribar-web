@@ -41,4 +41,10 @@ F droid = {
   type = "translation";
 };
 
-
+# bot: keiyoushi/extensions-source — merge edilen PR #19344, #14089
+extensions-source = {
+  url = "https://github.com/keiyoushi/extensions-source";
+  icon = "icons/extensions-source.png";
+  desc_en = "Source code of extensions in https://github.com/keiyoushi/extensions";
+  type = "translation";
+};
