@@ -41,4 +41,26 @@ F droid = {
   type = "translation";
 };
 
+# bot: Thoriii-Gloriii/pinafy — default branch'e giren commit
+pinafy = {
+  url = "https://github.com/Thoriii-Gloriii/pinafy";
+  icon = "icons/pinafy.png";
+  desc_en = "Metrolist with Glass UI integration";
+  type = "contribution";
+};
 
+# bot: justme8080/Oktaf — default branch'e giren commit
+Oktaf = {
+  url = "https://github.com/justme8080/Oktaf";
+  icon = "icons/oktaf.png";
+  desc_en = "Pemutar Musik tanpa iklan untuk Android dan Windows.";
+  type = "contribution";
+};
+
+# bot: keiyoushi/extensions-source — merge edilen PR #19344, #14089
+extensions-source = {
+  url = "https://github.com/keiyoushi/extensions-source";
+  icon = "icons/extensions-source.png";
+  desc_en = "Source code of extensions in https://github.com/keiyoushi/extensions";
+  type = "translation";
+};
