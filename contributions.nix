@@ -41,4 +41,63 @@ F droid = {
   type = "translation";
 };
 
+# bot: nekotopup/utako — default branch'e giren commit
+utako = {
+  url = "https://github.com/nekotopup/utako";
+  icon = "icons/utako.png";
+  type = "contribution";
+};
 
+# bot: AshiVered/PureMusic — default branch'e giren commit
+PureMusic = {
+  url = "https://github.com/AshiVered/PureMusic";
+  icon = "icons/puremusic.png";
+  desc_en = "Freedom YouTube Music client for Android";
+  type = "contribution";
+};
+
+# bot: derangedchief-crypto/X-Music — default branch'e giren commit
+X-Music = {
+  url = "https://github.com/derangedchief-crypto/X-Music";
+  icon = "icons/x-music.png";
+  desc_en = "X-Music — based on Metrolist (GPL-3.0)";
+  type = "contribution";
+};
+
+# bot: nekotopup/utako-release — default branch'e giren commit
+utako-release = {
+  url = "https://github.com/nekotopup/utako-release";
+  icon = "icons/utako-release.png";
+  desc_en = "Release builds for UtaKo";
+  type = "contribution";
+};
+
+# bot: NellDevSh/Aethers — default branch'e giren commit
+Aethers = {
+  url = "https://github.com/NellDevSh/Aethers";
+  icon = "icons/aethers.png";
+  type = "contribution";
+};
+
+# bot: iamenma/app_music — default branch'e giren commit
+app_music = {
+  url = "https://github.com/iamenma/app_music";
+  icon = "icons/app-music.png";
+  desc_en = "motroid tuneado";
+  type = "contribution";
+};
+
+# bot: carlsibug98-spec/fork-metrolist — default branch'e giren commit
+fork-metrolist = {
+  url = "https://github.com/carlsibug98-spec/fork-metrolist";
+  icon = "icons/fork-metrolist.png";
+  type = "contribution";
+};
+
+# bot: hayoloo642-cloud/CrystaList — default branch'e giren commit
+CrystaList = {
+  url = "https://github.com/hayoloo642-cloud/CrystaList";
+  icon = "icons/crystalist.png";
+  desc_en = "Apple Music inspired YouTube Music client (fork of Metrolist)";
+  type = "contribution";
+};
